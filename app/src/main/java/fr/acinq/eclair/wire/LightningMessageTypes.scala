@@ -244,12 +244,12 @@ trait HostedChannelMessage extends LightningMessage
 case class InvokeHostedChannel(chainHash: ByteVector32, refundScriptPubKey: ByteVector, secret: ByteVector = ByteVector.empty) extends HostedChannelMessage
 
 case class InitHostedChannel(maxHtlcValueInFlightMsat: UInt64, htlcMinimumMsat: MilliSatoshi, maxAcceptedHtlcs: Int, channelCapacityMsat: MilliSatoshi,
-                             initialClientBalanceMsat: MilliSatoshi, features: List[Int] = Nil) extends HostedChannelMessage
+                             initialClientBalanceMsat: MilliSatoshi, initialRate: MilliSatoshi, features: List[Int] = Nil) extends HostedChannelMessage
 
 case class HostedChannelBranding(rgbColor: Color, pngIcon: Option[ByteVector], contactInfo: String) extends HostedChannelMessage
 
 case class LastCrossSignedState(isHost: Boolean, refundScriptPubKey: ByteVector, initHostedChannel: InitHostedChannel, blockDay: Long, localBalanceMsat: MilliSatoshi,
-                                remoteBalanceMsat: MilliSatoshi, localUpdates: Long, remoteUpdates: Long, incomingHtlcs: List[UpdateAddHtlc], outgoingHtlcs: List[UpdateAddHtlc],
+                                remoteBalanceMsat: MilliSatoshi, rate: MilliSatoshi, localUpdates: Long, remoteUpdates: Long, incomingHtlcs: List[UpdateAddHtlc], outgoingHtlcs: List[UpdateAddHtlc],
                                 remoteSigOfLocal: ByteVector64, localSigOfRemote: ByteVector64) extends HostedChannelMessage {
 
   lazy val reverse: LastCrossSignedState =
@@ -269,6 +269,7 @@ case class LastCrossSignedState(isHost: Boolean, refundScriptPubKey: ByteVector,
       Protocol.writeUInt32(blockDay, ByteOrder.LITTLE_ENDIAN) ++
       Protocol.writeUInt64(localBalanceMsat.toLong, ByteOrder.LITTLE_ENDIAN) ++
       Protocol.writeUInt64(remoteBalanceMsat.toLong, ByteOrder.LITTLE_ENDIAN) ++
+      Protocol.writeUInt64(rate.toLong, ByteOrder.LITTLE_ENDIAN) ++
       Protocol.writeUInt32(localUpdates, ByteOrder.LITTLE_ENDIAN) ++
       Protocol.writeUInt32(remoteUpdates, ByteOrder.LITTLE_ENDIAN) ++
       inPayments.foldLeft(ByteVector.empty) { case (acc, htlc) => acc ++ htlc } ++

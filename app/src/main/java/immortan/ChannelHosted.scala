@@ -48,7 +48,7 @@ abstract class ChannelHosted extends Channel { me =>
       if (init.maxAcceptedHtlcs < 1) throw new RuntimeException("They can accept too few in-flight payments")
 
       val lcss = LastCrossSignedState(isHost = false, refundScriptPubKey, init, LNParams.currentBlockDay, init.initialClientBalanceMsat,
-        init.channelCapacityMsat - init.initialClientBalanceMsat, localUpdates = 0L, remoteUpdates = 0L, incomingHtlcs = Nil, outgoingHtlcs = Nil,
+        init.channelCapacityMsat - init.initialClientBalanceMsat, localUpdates = 0L, remoteUpdates = 0L, rate = 0L.msat, incomingHtlcs = Nil, outgoingHtlcs = Nil,
         localSigOfRemote = ByteVector64.Zeroes, remoteSigOfLocal = ByteVector64.Zeroes).withLocalSigOfRemote(remoteInfo.nodeSpecificPrivKey)
 
       val localHalfSignedHC = ChannelHosted.restoreCommits(lcss, remoteInfo)
