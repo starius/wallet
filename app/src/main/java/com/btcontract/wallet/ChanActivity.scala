@@ -1,7 +1,6 @@
 package com.btcontract.wallet
 
 import java.util.{Date, TimerTask}
-
 import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.text.Spanned
@@ -25,10 +24,11 @@ import fr.acinq.eclair.wire.HostedChannelBranding
 import immortan.ChannelListener.Malfunction
 import immortan._
 import immortan.crypto.Tools._
-import immortan.utils.{BitcoinUri, InputParser, PaymentRequestExt, Rx}
+import immortan.utils.{BitcoinUri, Denomination, InputParser, PaymentRequestExt, Rx}
 import immortan.wire.HostedState
 import rx.lang.scala.Subscription
 
+import java.text.DecimalFormat
 import scala.concurrent.duration._
 import scala.util.Try
 
@@ -102,6 +102,8 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
     val peerAddress: TextView = swipeWrap.findViewById(R.id.peerAddress).asInstanceOf[TextView]
     val chanState: View = swipeWrap.findViewById(R.id.chanState).asInstanceOf[View]
 
+    val rateText: TextView = swipeWrap.findViewById(R.id.fiatRateText).asInstanceOf[TextView]
+    val fiatText: TextView = swipeWrap.findViewById(R.id.fiatValueText).asInstanceOf[TextView]
     val canSendText: TextView = swipeWrap.findViewById(R.id.canSendText).asInstanceOf[TextView]
     val canReceiveText: TextView = swipeWrap.findViewById(R.id.canReceiveText).asInstanceOf[TextView]
     val refundableAmountText: TextView = swipeWrap.findViewById(R.id.refundableAmountText).asInstanceOf[TextView]
@@ -112,6 +114,8 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
 
     val wrappers: Seq[View] =
       swipeWrap.findViewById(R.id.progressBars).asInstanceOf[View] ::
+        swipeWrap.findViewById(R.id.fiatRate).asInstanceOf[View] ::
+        swipeWrap.findViewById(R.id.fiatValue).asInstanceOf[View] ::
         swipeWrap.findViewById(R.id.totalCapacity).asInstanceOf[View] ::
         swipeWrap.findViewById(R.id.refundableAmount).asInstanceOf[View] ::
         swipeWrap.findViewById(R.id.paymentsInFlight).asInstanceOf[View] ::
@@ -143,13 +147,14 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
         setVis(isVisible = true, extraInfoText)
         extraInfoText.setText(getString(ln_info_opening).html)
         channelCard setOnClickListener bringChanOptions(normalChanActions.take(2), cs)
-        visibleExcept(R.id.progressBars, R.id.paymentsInFlight, R.id.canReceive, R.id.canSend)
+        visibleExcept(R.id.progressBars, R.id.fiatRate, R.id.fiatValue, R.id.paymentsInFlight, R.id.canReceive, R.id.canSend)
       } else if (Channel isOperational chan) {
         channelCard setOnClickListener bringChanOptions(normalChanActions, cs)
         setVis(isVisible = cs.updateOpt.isEmpty || tempFeeMismatch, extraInfoText)
         if (cs.updateOpt.isEmpty) extraInfoText.setText(ln_info_no_update)
         if (tempFeeMismatch) extraInfoText.setText(ln_info_fee_mismatch)
         visibleExcept(goneRes = -1)
+        visibleExcept(R.id.fiatRate, R.id.fiatValue)
       } else {
         val closeInfoRes = chan.data match {
           case _: DATA_WAIT_FOR_REMOTE_PUBLISH_FUTURE_COMMITMENT => ln_info_await_close
@@ -162,7 +167,7 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
         }
 
         channelCard setOnClickListener bringChanOptions(normalChanActions.take(2), cs)
-        visibleExcept(R.id.progressBars, R.id.canReceive, R.id.canSend)
+        visibleExcept(R.id.progressBars, R.id.fiatRate, R.id.fiatValue, R.id.canReceive, R.id.canSend)
         extraInfoText.setText(getString(closeInfoRes).html)
         setVis(isVisible = true, extraInfoText)
       }
@@ -238,6 +243,11 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
       peerAddress.setText(peerInfo(hc.remoteInfo).html)
       baseBar.setSecondaryProgress(barCanSend + barCanReceive)
       baseBar.setProgress(barCanSend)
+
+      setVis(isVisible = true, rateText)
+      setVis(isVisible = true, fiatText)
+      rateText.setText(fiatOrNothing(56304, cardIn).html)
+      fiatText.setText(fiatOrNothing(0, cardIn).html)
 
       totalCapacityText.setText(sumOrNothing(capacity, cardIn).html)
       canReceiveText.setText(sumOrNothing(hc.availableForReceive, cardOut).html)
@@ -401,6 +411,17 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
 
   private def sumOrNothing(amt: MilliSatoshi, mainColor: String): String = {
     if (0L.msat != amt) WalletApp.denom.parsedWithSign(amt, mainColor, cardZero)
+    else getString(chan_nothing)
+  }
+
+  private def fiatOrNothing(amt: Int, mainColor: String): String = {
+    if (0L != amt) {
+      val fmt: DecimalFormat = new DecimalFormat("###,###,###")
+      fmt.setDecimalFormatSymbols(Denomination.symbols)
+      val sign = "USD/BTC"
+
+      s"<font color=$mainColor>" + fmt.format(amt) + "</font>" + "\u00A0" + sign
+    }
     else getString(chan_nothing)
   }
 

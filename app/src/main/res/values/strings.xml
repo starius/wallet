@@ -17,7 +17,7 @@
     <string name="bitcoin_wallet">Bitcoin</string>
     <string name="lightning_wallet">Lightning</string>
     <string name="total_balance">Total balance</string>
-    <string name="hosted_channel">HOSTED CHANNEL\nCustodial solution</string>
+    <string name="hosted_channel">FIAT CHANNEL\nCustodial solution</string>
     <string name="typing_hints">Bitcoin address, invoice, email&#8230;</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="add_address">More fresh addresses</string>
@@ -233,9 +233,9 @@
     <string name="rpa_title">Remote peer connection</string>
     <string name="rpa_disconnected">Remote peer disconnected</string>
     <string name="rpa_no_feature_support">Can not open channels with this node since some important features are not supported by remote peer.</string>
-    <string name="rpa_hc_warn"><![CDATA[<br><b>Attention!</b><br><br>Your hosted channel funds will be stored on a host side, make sure you trust this peer to not exit scam.]]></string>
+    <string name="rpa_hc_warn"><![CDATA[<br><b>Attention!</b><br><br>Your hosted channel funds will be stored on a host side, make sure you trust this peer to not exit scam. <br><br> Your balance will be tight to the USD amount and the amount in sats will be floating. ]]></string>
     <string name="rpa_request_channel">Share your node ID with remote peer and keep this page open to get an incoming channel.</string>
-    <string name="rpa_request_hc">Request hosted channel</string>
+    <string name="rpa_request_hc">Request fiat channel</string>
     <string name="rpa_share_node_id">Share node ID</string>
     <string name="rpa_open_nc">Fund new channel</string>
 
@@ -371,6 +371,8 @@
     <string name="stats_item_relayed"><![CDATA[<b>volume</b>&#160;%1$s]]></string>
     <string name="stats_item_earned"><![CDATA[<b>earned</b>&#160;%1$s]]></string>
 
+    <string name="chan_fiat_rate">Rate</string>
+    <string name="chan_fiat_value">Fiat balance</string>
     <string name="chan_capacity">Capacity</string>
     <string name="chan_can_send">Can send</string>
     <string name="chan_can_receive">Can receive</string>
