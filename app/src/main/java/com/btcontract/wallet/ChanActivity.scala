@@ -198,10 +198,12 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
 
   class HostedViewHolder(view: View) extends ChanCardViewHolder(view) {
     def fill(chan: ChannelHosted, hc: HostedCommits): HostedViewHolder = {
+      val rate = 100000000000L.toDouble / hc.lastCrossSignedState.rate.underlying.toDouble
       val capacity = hc.lastCrossSignedState.initHostedChannel.channelCapacityMsat
       val inFlight = hc.nextLocalSpec.htlcs.foldLeft(0L.msat)(_ + _.add.amountMsat)
       val barCanReceive = (hc.availableForReceive.toLong / capacity.truncateToSatoshi.toLong).toInt
       val barCanSend = (hc.availableForSend.toLong / capacity.truncateToSatoshi.toLong).toInt
+      val fiatValue = barCanSend.toDouble * rate
 
       val errorText = (hc.localError, hc.remoteError) match {
         case Some(error) ~ _ => s"LOCAL: ${ErrorExt extractDescription error}"
@@ -246,8 +248,8 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
 
       setVis(isVisible = true, rateText)
       setVis(isVisible = true, fiatText)
-      rateText.setText(fiatOrNothing(56304, cardIn).html)
-      fiatText.setText(fiatOrNothing(0, cardIn).html)
+      rateText.setText(fiatOrNothing(rate, cardIn).html)
+      fiatText.setText(fiatOrNothing(fiatValue, cardIn).html)
 
       totalCapacityText.setText(sumOrNothing(capacity, cardIn).html)
       canReceiveText.setText(sumOrNothing(hc.availableForReceive, cardOut).html)
@@ -414,9 +416,9 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
     else getString(chan_nothing)
   }
 
-  private def fiatOrNothing(amt: Int, mainColor: String): String = {
-    if (0L != amt) {
-      val fmt: DecimalFormat = new DecimalFormat("###,###,###")
+  private def fiatOrNothing(amt: Double, mainColor: String): String = {
+    if (0.0 != amt) {
+      val fmt: DecimalFormat = new DecimalFormat("###,###,###.##")
       fmt.setDecimalFormatSymbols(Denomination.symbols)
       val sign = "USD/BTC"
 

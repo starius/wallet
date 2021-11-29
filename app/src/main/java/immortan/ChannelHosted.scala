@@ -46,9 +46,10 @@ abstract class ChannelHosted extends Channel { me =>
       if (UInt64(100000000L) > init.maxHtlcValueInFlightMsat) throw new RuntimeException(s"Their max value in-flight=${init.maxHtlcValueInFlightMsat}, is too low")
       if (init.htlcMinimumMsat > 546000L.msat) throw new RuntimeException(s"Their minimal payment size=${init.htlcMinimumMsat}, is too high")
       if (init.maxAcceptedHtlcs < 1) throw new RuntimeException("They can accept too few in-flight payments")
+      // TODO: add server fiat rate check here !!!
 
       val lcss = LastCrossSignedState(isHost = false, refundScriptPubKey, init, LNParams.currentBlockDay, init.initialClientBalanceMsat,
-        init.channelCapacityMsat - init.initialClientBalanceMsat, localUpdates = 0L, remoteUpdates = 0L, rate = 0L.msat, incomingHtlcs = Nil, outgoingHtlcs = Nil,
+        init.channelCapacityMsat - init.initialClientBalanceMsat, localUpdates = 0L, remoteUpdates = 0L, rate = init.initialRate, incomingHtlcs = Nil, outgoingHtlcs = Nil,
         localSigOfRemote = ByteVector64.Zeroes, remoteSigOfLocal = ByteVector64.Zeroes).withLocalSigOfRemote(remoteInfo.nodeSpecificPrivKey)
 
       val localHalfSignedHC = ChannelHosted.restoreCommits(lcss, remoteInfo)
