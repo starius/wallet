@@ -308,6 +308,7 @@ object LightningMessageCodecs {
     (uint32 withContext "blockDay") ::
       (uint32 withContext "localUpdates") ::
       (uint32 withContext "remoteUpdates") ::
+      (millisatoshi withContext "rate") ::
       (bytes64 withContext "localSigOfRemoteLCSS")
   }.as[StateUpdate]
 
@@ -316,6 +317,7 @@ object LightningMessageCodecs {
       (millisatoshi withContext "localBalanceMsat") ::
       (uint32 withContext "localUpdates") ::
       (uint32 withContext "remoteUpdates") ::
+      (millisatoshi withContext "rate") ::
       (bytes64 withContext "localSigOfRemoteLCSS")
   }.as[StateOverride]
 
