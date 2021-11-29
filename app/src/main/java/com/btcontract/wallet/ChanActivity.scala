@@ -203,7 +203,7 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
       val inFlight = hc.nextLocalSpec.htlcs.foldLeft(0L.msat)(_ + _.add.amountMsat)
       val barCanReceive = (hc.availableForReceive.toLong / capacity.truncateToSatoshi.toLong).toInt
       val barCanSend = (hc.availableForSend.toLong / capacity.truncateToSatoshi.toLong).toInt
-      val fiatValue = barCanSend.toDouble * rate
+      val fiatValue = barCanSend.toDouble * rate / 10000.0
 
       val errorText = (hc.localError, hc.remoteError) match {
         case Some(error) ~ _ => s"LOCAL: ${ErrorExt extractDescription error}"

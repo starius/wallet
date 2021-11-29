@@ -273,6 +273,7 @@ abstract class ChannelHosted extends Channel { me =>
 
   def localSuspend(hc: HostedCommits, errCode: String): Unit = {
     val localError = Fail(data = ByteVector.fromValidHex(errCode), channelId = hc.channelId)
+    println(s"Local suspending due the ${localError}")
     if (hc.localError.isEmpty) StoreBecomeSend(hc.copy(localError = localError.asSome), state, localError)
   }
 
