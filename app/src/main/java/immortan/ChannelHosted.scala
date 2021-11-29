@@ -320,7 +320,11 @@ abstract class ChannelHosted extends Channel { me =>
   }
 
   def attemptStateUpdate(remoteSU: StateUpdate, hc: HostedCommits): Unit = {
+    println(s"PLGN FC, attemptStateUpdate with ${remoteSU}")
+    println(s"Channel old rate is ${hc.lastCrossSignedState.rate}")
+    println(s"New server rate is ${remoteSU.rate}")
     val lcss1 = hc.nextLocalUnsignedLCSS(remoteSU.blockDay).copy(rate = remoteSU.rate, remoteSigOfLocal = remoteSU.localSigOfRemoteLCSS).withLocalSigOfRemote(hc.remoteInfo.nodeSpecificPrivKey)
+    println(s"New channel rate is ${lcss1.rate}")
     val hc1 = hc.copy(lastCrossSignedState = lcss1, localSpec = hc.nextLocalSpec, nextLocalUpdates = Nil, nextRemoteUpdates = Nil)
     val isRemoteSigOk = lcss1.verifyRemoteSig(hc.remoteInfo.nodeId)
     val isBlockDayWrong = isOutOfSync(remoteSU.blockDay)
