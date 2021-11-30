@@ -2,15 +2,13 @@
 <resources>
     <string name="lang">rus</string>
     <string name="app_name">SBW</string>
-
-    <string name="rate">&#9825; Оцените нас</string>
     <string name="sources">Исходный код</string>
     <string name="twitter">Наш твиттер</string>
     <string name="password">Пароль кошелька</string>
     <string name="manual">Читать инструкцию</string>
 
     <string name="choose_wallet">Выберите кошелек</string>
-    <string name="hardware_wallet">Аппаратный кошелек</string>
+    <string name="hardware_wallet">Аппаратный</string>
     <string name="watching_wallet">Watching wallet</string>
     <string name="coin_control">Coin контроль</string>
 
@@ -61,7 +59,7 @@
     <string name="title_chans">Каналы Молнии</string>
 
     <string name="dialog_send">Послать</string>
-    <string name="dialog_receive">Получить</string>
+    <string name="dialog_receive">Принять</string>
 
     <string name="dialog_ok">OK</string>
     <string name="dialog_stamp">Печать</string>
@@ -189,9 +187,9 @@
     <string name="tx_description_refunding">Возврат средств из канала</string>
     <string name="tx_description_htlc_claiming">Возврат платежа-Молнии</string>
     <string name="tx_description_penalty">Штраф за пролом канала</string>
-    <string name="tx_description_rbf_boost">RBF-ускоряющая транзакция</string>
-    <string name="tx_description_rbf_cancel">Сбор за RBF-отмену</string>
-    <string name="tx_description_cpfp">Сбор за CPFP-ускорение</string>
+    <string name="tx_description_rbf_cancel">RBF-отмена</string>
+    <string name="tx_description_rbf_boost">RBF-ускорение</string>
+    <string name="tx_description_cpfp">CPFP-ускорение</string>
 
     <string name="tx_btc">Биткойн-транзакция</string>
     <string name="tx_ln">Платеж-Молния</string>
@@ -355,13 +353,7 @@
     <string name="stats_title_chan_loss"><![CDATA[<b>Комиссии закрытия каналов</b>]]></string>
     <string name="stats_title_chain"><![CDATA[<b>Биткойн транзакции</b>]]></string>
     <string name="stats_title_relays"><![CDATA[<b>Маршрутизированные платежи</b>]]></string>
-    <string name="stats_title_network"><![CDATA[<b>Статус сети</b>]]></string>
     <string name="stats_title_ln"><![CDATA[<b>Платежи через Молнию</b>]]></string>
-
-    <string name="stats_item_chain_node"><![CDATA[<b>узел&#160;цепи</b>&#160;%1$s]]></string>
-    <string name="stats_item_chain_tip"><![CDATA[<b>высота&#160;цепи</b>&#160;%1$s]]></string>
-    <string name="stats_item_graph"><![CDATA[<b>sync&#160;графа</b>&#160;%1$s]]></string>
-    <string name="stats_item_phc"><![CDATA[<b>sync&#160;PHC</b>&#160;%1$s]]></string>
 
     <string name="stats_item_sent"><![CDATA[<b>отправлено</b>&#160;%1$s]]></string>
     <string name="stats_item_received"><![CDATA[<b>принято</b>&#160;%1$s]]></string>

@@ -34,7 +34,7 @@ import fr.acinq.eclair.blockchain.fee.FeeratePerByte
 import fr.acinq.eclair.channel._
 import fr.acinq.eclair.router.Router
 import fr.acinq.eclair.transactions.{LocalFulfill, RemoteFulfill, Scripts}
-import fr.acinq.eclair.wire.{FullPaymentTag, PaymentTagTlv, UnknownNextPeer}
+import fr.acinq.eclair.wire.{FullPaymentTag, NodeAnnouncement, PaymentTagTlv, UnknownNextPeer}
 import immortan.ChannelListener.Malfunction
 import immortan.ChannelMaster.{OutgoingAdds, RevealedLocalFulfills}
 import immortan.PathFinder.{ExpectedRouteFees, GetExpectedRouteFees}
@@ -59,13 +59,12 @@ import scala.util.{Success, Try}
 
 
 object HubActivity {
-  var txInfos = new ItemsWithMemory[TxInfo]
-  var paymentInfos = new ItemsWithMemory[PaymentInfo]
-  var lnUrlPayLinks = new ItemsWithMemory[LNUrlPayLink]
-  var relayedPreimageInfos = new ItemsWithMemory[RelayedPreimageInfo]
-  val allItems = List(txInfos, paymentInfos, relayedPreimageInfos, lnUrlPayLinks)
+  var txInfos: Iterable[TxInfo] = Nil
+  var paymentInfos: Iterable[PaymentInfo] = Nil
+  var lnUrlPayLinks: Iterable[LNUrlPayLink] = Nil
+  var relayedPreimageInfos: Iterable[RelayedPreimageInfo] = Nil
   // Run clear up method once on app start, do not re-run it every time this activity gets restarted
-  lazy val markAsFailedOnce: Unit = LNParams.cm.markAsFailed(paymentInfos.lastItems, LNParams.cm.allInChannelOutgoing)
+  lazy val markAsFailedOnce: Unit = LNParams.cm.markAsFailed(paymentInfos, LNParams.cm.allInChannelOutgoing)
   val disaplyThreshold: Long = System.currentTimeMillis
 
   var lastHostedReveals: Map[ByteVector32, RevealedLocalFulfills] = Map.empty
@@ -90,10 +89,10 @@ object HubActivity {
   def dangerousHCRevealed(fullTag: FullPaymentTag): List[LocalFulfill] = ChannelMaster.dangerousHCRevealed(lastHostedReveals, LNParams.blockCount.get, fullTag.paymentHash).toList
   def itemsToTags: Map[Int, String] = Map(R.id.bitcoinPayments -> "bitcoinPayments", R.id.lightningPayments -> "lightningPayments", R.id.relayedPayments -> "relayedPayments", R.id.payMarketLinks -> "payMarketLinks")
   def incoming(amount: MilliSatoshi): String = WalletApp.denom.directedWithSign(incoming = amount, outgoing = 0L.msat, cardOut, cardIn, cardZero, isIncoming = true)
-  def hasItems: Boolean = allItems.exists(_.lastItems.nonEmpty)
+  def hasItems: Boolean = txInfos.nonEmpty || paymentInfos.nonEmpty || lnUrlPayLinks.nonEmpty || relayedPreimageInfos.nonEmpty
 }
 
-class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with ExternalDataChecker with ChoiceReceiver with ChannelListener { me =>
+class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with ExternalDataChecker with ChoiceReceiver with ChannelListener with CanBeRepliedTo { me =>
   private[this] lazy val expiresInBlocks = getResources.getStringArray(R.array.expires_in_blocks)
   private[this] lazy val partsInFlight = getResources.getStringArray(R.array.parts_in_flight)
   private[this] lazy val pctCollected = getResources.getStringArray(R.array.pct_collected)
@@ -123,10 +122,10 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
 
   // PAYMENT LIST
 
-  def reloadTxInfos: Unit = txInfos.setItems(WalletApp.txDataBag.listRecentTxs(200) map WalletApp.txDataBag.toTxInfo)
-  def reloadPaymentInfos: Unit = paymentInfos.setItems(LNParams.cm.payBag.listRecentPayments(20) map LNParams.cm.payBag.toPaymentInfo)
-  def reloadRelayedPreimageInfos: Unit = relayedPreimageInfos.setItems(LNParams.cm.payBag.listRecentRelays(20) map LNParams.cm.payBag.toRelayedPreimageInfo)
-  def reloadPayMarketInfos: Unit = lnUrlPayLinks.setItems(WalletApp.lnUrlPayBag.listRecentLinks(20) map WalletApp.lnUrlPayBag.toLinkInfo)
+  def reloadTxInfos: Unit = txInfos = WalletApp.txDataBag.listRecentTxs(20).map(WalletApp.txDataBag.toTxInfo)
+  def reloadPaymentInfos: Unit = paymentInfos = LNParams.cm.payBag.listRecentPayments(20).map(LNParams.cm.payBag.toPaymentInfo)
+  def reloadRelayedPreimageInfos: Unit = relayedPreimageInfos = LNParams.cm.payBag.listRecentRelays(20).map(LNParams.cm.payBag.toRelayedPreimageInfo)
+  def reloadPayMarketInfos: Unit = lnUrlPayLinks = WalletApp.lnUrlPayBag.listRecentLinks(20).map(WalletApp.lnUrlPayBag.toLinkInfo)
 
   def isImportantItem: PartialFunction[TransactionDetails, Boolean] = {
     case anyFreshInfo if anyFreshInfo.updatedAt > disaplyThreshold => true
@@ -136,11 +135,11 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
   }
 
   def updAllInfos: Unit = UITask {
+    val exceptRouted = List(txInfos, paymentInfos, lnUrlPayLinks)
     val dr = LNParams.cm.delayedRefunds.asSome.filter(_.totalAmount > 0L.msat)
-    val alwaysVisibleInfos = allItems.flatMap(_.lastItems filter isImportantItem)
     val itemsToDisplayMap = Map(R.id.bitcoinPayments -> txInfos, R.id.lightningPayments -> paymentInfos, R.id.relayedPayments -> relayedPreimageInfos, R.id.payMarketLinks -> lnUrlPayLinks)
-    val allVisibleInfos = if (isSearchOn) List(txInfos, paymentInfos, lnUrlPayLinks) else walletCards.toggleGroup.getCheckedButtonIds.asScala.map(_.toInt).map(itemsToDisplayMap)
-    allInfos = SemanticOrder.makeSemanticOrder(allVisibleInfos.flatMap(_.lastItems) ++ alwaysVisibleInfos ++ dr)
+    val allVisibleInfos = if (isSearchOn) exceptRouted else walletCards.toggleGroup.getCheckedButtonIds.asScala.map(_.toInt).map(itemsToDisplayMap)
+    allInfos = SemanticOrder.makeSemanticOrder(allVisibleInfos.flatten ++ exceptRouted.flatMap(_ filter isImportantItem) ++ dr)
   }.run
 
   def loadRecent: Unit = {
@@ -154,9 +153,9 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
   }
 
   def loadSearch(query: String): Unit = WalletApp.txDataBag.db.txWrap {
-    txInfos.lastItems = WalletApp.txDataBag.searchTransactions(query).map(WalletApp.txDataBag.toTxInfo)
-    paymentInfos.lastItems = LNParams.cm.payBag.searchPayments(query).map(LNParams.cm.payBag.toPaymentInfo)
-    lnUrlPayLinks.lastItems = WalletApp.lnUrlPayBag.searchLinks(query).map(WalletApp.lnUrlPayBag.toLinkInfo)
+    txInfos = WalletApp.txDataBag.searchTransactions(query).map(WalletApp.txDataBag.toTxInfo)
+    paymentInfos = LNParams.cm.payBag.searchPayments(query).map(LNParams.cm.payBag.toPaymentInfo)
+    lnUrlPayLinks = WalletApp.lnUrlPayBag.searchLinks(query).map(WalletApp.lnUrlPayBag.toLinkInfo)
     updAllInfos
   }
 
@@ -420,7 +419,7 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
           isSent <- notifyAndBroadcast(fromWallet, cpfpResponse.tx)
         } if (isSent) {
           // Parent semantic order is already updated, now we also update CPFP parent info
-          WalletApp.txDataBag.updDescription(parentDescWithOrder.withNewCpfpBy(cpfpResponse.tx.txid), info.txid)
+          WalletApp.txDataBag.updDescription(parentDescWithOrder.withNewCPFPBy(cpfpResponse.tx.txid), info.txid)
         } else {
           // We revert the whole description back since CPFP has failed
           WalletApp.txDataBag.updDescription(info.description, info.txid)
@@ -653,26 +652,28 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
           }
 
         case info: TxInfo =>
-          val belongsToSigningWallet = LNParams.chainWallets.findByPubKey(info.pubKey).exists(_.isSigning)
           val amount = if (info.isIncoming) info.receivedSat.toMilliSatoshi else info.sentSat.toMilliSatoshi
-          val fee = WalletApp.denom.directedWithSign(0L.msat, info.feeSat.toMilliSatoshi, cardOut, cardIn, cardZero, isIncoming = false)
           val canRBF = !info.isIncoming && !info.isDoubleSpent && info.depth < 1 && info.description.rbf.isEmpty && info.description.cpfpOf.isEmpty
-          val canCPFP = info.isIncoming && !info.isDoubleSpent && info.depth < 1 && info.description.canBeCPFPd
+          val canCPFP = info.isIncoming && !info.isDoubleSpent && info.depth < 1 && info.description.rbf.isEmpty && info.description.canBeCPFPd
+          val isFromSigningWallet = LNParams.chainWallets.findByPubKey(info.pubKey).exists(_.isSigning)
+          val isRbfCancel = info.description.rbf.exists(_.mode == TxDescription.RBF_CANCEL)
 
+          val fee = WalletApp.denom.directedWithSign(0L.msat, info.feeSat.toMilliSatoshi, cardOut, cardIn, cardZero, isIncoming = false)
           val fiatThen = WalletApp.msatInFiatHuman(LNParams.fiatRates.info.rates, WalletApp.fiatCode, amount, Denomination.formatFiatPrecise)
           val fiatNow = WalletApp.msatInFiatHuman(info.fiatRateSnapshot, WalletApp.fiatCode, amount, Denomination.formatFiatPrecise)
+          val balanceSnapshot = WalletApp.denom.parsedWithSign(info.balanceSnapshot, cardIn, cardZero)
 
           addFlowChip(extraInfo, getString(popup_txid) format info.txidString.short, R.drawable.border_green, info.txidString.asSome)
           for (address <- info.description.toAddress) addFlowChip(extraInfo, getString(popup_to_address) format address.short, R.drawable.border_yellow, address.asSome)
           for (nodeId <- info.description.withNodeId) addFlowChip(extraInfo, getString(popup_ln_node) format nodeId.toString.short, R.drawable.border_blue, nodeId.toString.asSome)
 
           addFlowChip(extraInfo, getString(popup_fiat).format(s"<font color=$cardIn>$fiatNow</font>", fiatThen), R.drawable.border_gray)
-          if (info.description.rbf.isEmpty) addFlowChip(extraInfo, getString(popup_prior_chain_balance) format WalletApp.denom.parsedWithSign(info.balanceSnapshot, cardIn, cardZero), R.drawable.border_gray)
-          if (!info.isIncoming && !info.description.rbf.exists(_.mode == TxDescription.RBF_CANCEL) && info.description.cpfpOf.isEmpty) addFlowChip(extraInfo, getString(popup_chain_fee) format fee, R.drawable.border_gray)
+          if (info.description.cpfpOf.isEmpty && info.description.rbf.isEmpty) addFlowChip(extraInfo, getString(popup_prior_chain_balance) format balanceSnapshot, R.drawable.border_gray)
+          if (!info.isIncoming || isRbfCancel || info.description.cpfpOf.isDefined) addFlowChip(extraInfo, getString(popup_chain_fee) format fee, R.drawable.border_gray)
 
-          if (belongsToSigningWallet && canCPFP) addFlowChip(extraInfo, getString(dialog_boost), R.drawable.border_yellow, _ => self boostCPFP info)
-          if (belongsToSigningWallet && canRBF) addFlowChip(extraInfo, getString(dialog_cancel), R.drawable.border_yellow, _ => self cancelRBF info)
-          if (belongsToSigningWallet && canRBF) addFlowChip(extraInfo, getString(dialog_boost), R.drawable.border_yellow, _ => self boostRBF info)
+          if (isFromSigningWallet && canCPFP) addFlowChip(extraInfo, getString(dialog_boost), R.drawable.border_yellow, _ => self boostCPFP info)
+          if (isFromSigningWallet && canRBF) addFlowChip(extraInfo, getString(dialog_cancel), R.drawable.border_yellow, _ => self cancelRBF info)
+          if (isFromSigningWallet && canRBF) addFlowChip(extraInfo, getString(dialog_boost), R.drawable.border_yellow, _ => self boostRBF info)
 
         case info: RelayedPreimageInfo =>
           val relayedHuman = WalletApp.denom.parsedWithSign(info.relayed, cardIn, cardZero)
@@ -845,8 +846,9 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
     val totalBalance: TextView = view.findViewById(R.id.totalBalance).asInstanceOf[TextView]
     val totalFiatBalance: TextView = view.findViewById(R.id.totalFiatBalance).asInstanceOf[TextView]
     val fiatUnitPriceAndChange: TextView = view.findViewById(R.id.fiatUnitPriceAndChange).asInstanceOf[TextView]
+    val chainSyncIndicator: TextView = view.findViewById(R.id.chainSyncIndicator).asInstanceOf[TextView]
     val offlineIndicator: TextView = view.findViewById(R.id.offlineIndicator).asInstanceOf[TextView]
-    val syncIndicator: TextView = view.findViewById(R.id.syncIndicator).asInstanceOf[TextView]
+    val lnSyncIndicator: TextView = view.findViewById(R.id.lnSyncIndicator).asInstanceOf[TextView]
 
     val totalLightningBalance: TextView = view.findViewById(R.id.totalLightningBalance).asInstanceOf[TextView]
     val channelStateIndicators: RelativeLayout = view.findViewById(R.id.channelStateIndicators).asInstanceOf[RelativeLayout]
@@ -959,12 +961,11 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
     }.run
 
     override def onChainSyncStarted(localTip: Long, remoteTip: Long): Unit = UITask {
-      setVis(isVisible = remoteTip - localTip > 2016 * 4, walletCards.syncIndicator)
+      setVis(isVisible = remoteTip - localTip > 2016 * 4, walletCards.chainSyncIndicator)
     }.run
 
     override def onChainSyncEnded(localTip: Long): Unit = UITask {
-      TransitionManager.beginDelayedTransition(walletCards.defaultHeader)
-      setVis(isVisible = false, walletCards.syncIndicator)
+      setVis(isVisible = false, walletCards.chainSyncIndicator)
     }.run
 
     override def onWalletReady(event: WalletReady): Unit = {
@@ -987,7 +988,7 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
     }.run
 
     override def gotFirstPreimage(data: OutgoingPaymentSenderData, fulfill: RemoteFulfill): Unit = UITask {
-      val actionOpt = paymentInfos.lastItems.find(_.paymentHash == fulfill.ourAdd.paymentHash).flatMap(_.action)
+      val actionOpt = paymentInfos.find(_.paymentHash == fulfill.ourAdd.paymentHash).flatMap(_.action)
       for (paymentAction <- actionOpt) resolveAction(fulfill.theirPreimage, paymentAction)
       Vibrator.vibrate
     }.run
@@ -1033,10 +1034,21 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
     try for (channel <- LNParams.cm.all.values) channel.listeners -= me catch none
     try LNParams.cm.localPaymentListeners remove extraOutgoingListener catch none
     try LNParams.fiatRates.listeners -= fiatRatesListener catch none
+    try LNParams.cm.pf.listeners -= me catch none
     super.onDestroy
   }
 
   override def onBackPressed: Unit = if (isSearchOn) rmSearch(null) else super.onBackPressed
+
+  // Getting graph sync status and our peer announcements
+
+  override def process(reply: Any): Unit = reply match {
+    case na: NodeAnnouncement => LNParams.cm.all.values.foreach(_ process na.toRemoteInfo)
+    case _: SyncMasterShortIdData => UITask(walletCards.lnSyncIndicator setVisibility View.VISIBLE).run
+    case _: PureRoutingData => UITask(walletCards.lnSyncIndicator setVisibility View.VISIBLE).run
+    case _: SyncMaster => UITask(walletCards.lnSyncIndicator setVisibility View.GONE).run
+    case _ => // Do nothing
+  }
 
   type GrantResults = Array[Int]
 
@@ -1236,6 +1248,7 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
       LNParams.cm.localPaymentListeners add extraOutgoingListener
       LNParams.fiatRates.listeners += fiatRatesListener
       LNParams.chainWallets.catcher ! chainListener
+      LNParams.cm.pf.listeners += me
 
       bottomActionBar post UITask {
         bottomBlurringArea.setHeightTo(bottomActionBar)
@@ -1273,7 +1286,7 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
 
       runInFutureProcessOnUI(loadRecent, none) { _ =>
         // We suggest user to rate us if: no rate attempt has been made before, LN payments were successful, user has been using an app for certain period
-        setVis(WalletApp.showRateUs && paymentInfos.lastItems.forall(_.status == PaymentStatus.SUCCEEDED) && allInfos.size > 4 && allInfos.size < 8, walletCards.rateTeaser)
+        setVis(WalletApp.showRateUs && paymentInfos.forall(_.status == PaymentStatus.SUCCEEDED) && allInfos.size > 4 && allInfos.size < 8, walletCards.rateTeaser)
         // User may kill an activity but not an app and on getting back there won't be a chain listener event, so check connectivity once again here
         setVis(isVisible = WalletApp.currentChainNode.isEmpty, walletCards.offlineIndicator)
         walletCards.searchField addTextChangedListener onTextChange(searchWorker.addWork)
@@ -1290,7 +1303,7 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
         reloadTxInfos
 
         for {
-          txInfo <- txInfos.lastItems if !txInfo.isDoubleSpent && !txInfo.isConfirmed
+          txInfo <- txInfos if !txInfo.isDoubleSpent && !txInfo.isConfirmed
           relatedChainWallet <- LNParams.chainWallets.findByPubKey(pub = txInfo.pubKey)
           res <- relatedChainWallet.doubleSpent(txInfo.tx) if res.depth != txInfo.depth || res.isDoubleSpent != txInfo.isDoubleSpent
         } WalletApp.txDataBag.updStatus(txInfo.txid, res.depth, updatedStamp = res.stamp, res.isDoubleSpent)
@@ -1624,7 +1637,7 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
             LNParams.cm.localSend(cmd)
 
             if (!pf.isThrowAway) {
-              val currentLabel = lnUrlPayLinks.lastItems.find(_.payString == lnUrl.request).flatMap(_.description.label)
+              val currentLabel = lnUrlPayLinks.find(_.payString == lnUrl.request).flatMap(_.description.label)
               val desc = LNUrlDescription(currentLabel, linkOrder.asSome, randKey.value.toHex, pf.prExt.pr.paymentHash, pf.prExt.pr.paymentSecret.get, manager.resultMsat)
               val info = LNUrlPayLink(domain = lnUrl.uri.getHost, payString = lnUrl.request, data.metadata, updatedAt = System.currentTimeMillis, desc, pf.prExt.pr.nodeId.toString, getComment)
               WalletApp.lnUrlPayBag.saveLink(info)
@@ -1669,12 +1682,8 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
   }
 
   def paymentAdapterDataChanged: TimerTask = UITask {
-    if (txInfos.lastDelta > 0) walletCards.bitcoinPayments.setText(s"+${txInfos.lastDelta}")
-    if (lnUrlPayLinks.lastDelta > 0) walletCards.payMarketLinks.setText(s"+${lnUrlPayLinks.lastDelta}")
-    if (paymentInfos.lastDelta > 0) walletCards.lightningPayments.setText(s"+${paymentInfos.lastDelta}")
-    if (relayedPreimageInfos.lastDelta > 0) walletCards.relayedPayments.setText(s"+${relayedPreimageInfos.lastDelta}")
-    setVis(isVisible = relayedPreimageInfos.lastItems.nonEmpty, walletCards.relayedPayments)
-    setVis(isVisible = lnUrlPayLinks.lastItems.nonEmpty, walletCards.payMarketLinks)
+    setVis(isVisible = relayedPreimageInfos.nonEmpty, walletCards.relayedPayments)
+    setVis(isVisible = lnUrlPayLinks.nonEmpty, walletCards.payMarketLinks)
     setVis(isVisible = hasItems && !isSearchOn, walletCards.listCaption)
     setVis(isVisible = !hasItems, walletCards.recoveryPhrase)
     paymentsAdapter.notifyDataSetChanged
@@ -1701,7 +1710,7 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
   }
 
   def notifyAndBroadcast(fromWallet: ElectrumEclairWallet, tx: Transaction): Future[Boolean] = {
-    WalletApp.app.quickToast(pctCollected.head)
+    UITask(WalletApp.app quickToast pctCollected.head).run
     fromWallet.broadcast(tx)
   }
 }

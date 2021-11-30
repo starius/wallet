@@ -24,7 +24,7 @@ Simple Bitcoin Wallet (aka SBW) is an [IMMORTAN](https://github.com/btcontract/I
 ```
 git clone https://github.com/btcontract/wallet.git
 cd wallet
-git checkout 2.4.19
+git checkout 2.4.21
 podman build -t sbw .
 podman run -v $PWD:/app/simplebitcoinwallet/wallet:z sbw
 ```
@@ -34,15 +34,15 @@ podman run -v $PWD:/app/simplebitcoinwallet/wallet:z sbw
 Install Android SDK, create a `keystore.jks` using `keytool`.
 
 ```
-$ <Android SDK dir>/build-tools/<version>/zipalign -v 4 app/build/outputs/apk/release/SBW-2.4.19.apk app/build/outputs/apk/release/SBW-2.4.19-aligned.apk
+$ <Android SDK dir>/build-tools/<version>/zipalign -v 4 app/build/outputs/apk/release/SBW-2.4.21.apk app/build/outputs/apk/release/SBW-2.4.21-aligned.apk
 
-$ <Android SDK dir>/build-tools/<version>/apksigner sign --ks <path to keystore.jks> --ks-key-alias <signing key alias> --v1-signing-enabled true --v2-signing-enabled true app/build/outputs/apk/release/SBW-2.4.19-aligned.apk
+$ <Android SDK dir>/build-tools/<version>/apksigner sign --ks <path to keystore.jks> --ks-key-alias <signing key alias> --v1-signing-enabled true --v2-signing-enabled true app/build/outputs/apk/release/SBW-2.4.21-aligned.apk
 ```
 
 ## Verification with `apksigner`
 
 ```
-$ '<Android SDK dir>/build-tools/<version>/apksigner' verify --print-certs --verbose SBW-2.4.19.apk
+$ '<Android SDK dir>/build-tools/<version>/apksigner' verify --print-certs --verbose SBW-2.4.21.apk
 ```
 
 Output should contain the following info:
@@ -62,3 +62,17 @@ Signer #1 public key SHA-256 digest: dc97f0f2e34167015914600d8fa748f908d578bcedb
 Signer #1 public key SHA-1 digest: c4400469d5ad807dd9394785f1fa95003588a091
 Signer #1 public key MD5 digest: e4e1f847e0cb0a9703dc4f9323fd6d87
 ```
+
+### Project sponsors
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://lnbig.com/" target="_blank">
+          <img width="146px" src="https://i.imgur.com/W4A92Ym.png">
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>

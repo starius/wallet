@@ -5,9 +5,10 @@ import fr.acinq.bitcoin.Crypto.{PrivateKey, PublicKey}
 import fr.acinq.bitcoin.{ByteVector32, ByteVector64, Crypto, Protocol, Satoshi}
 import fr.acinq.eclair._
 import fr.acinq.eclair.blockchain.fee.FeeratePerKw
+import fr.acinq.eclair.payment.PaymentRequest.ExtraHop
 import fr.acinq.eclair.router.Announcements
 import immortan.crypto.Tools
-import immortan.{ChannelMaster, LNParams}
+import immortan.{ChannelMaster, LNParams, RemoteNodeInfo}
 import scodec.DecodeResult
 import scodec.bits.ByteVector
 
@@ -131,11 +132,6 @@ object NodeAddress {
   val V2Len = 16
   val V3Len = 56
 
-  def isTor(na: NodeAddress): Boolean = na match {
-    case _: Tor2 | _: Tor3 => true
-    case _ => false
-  }
-
   def fromParts(host: String, port: Int, orElse: (String, Int) => NodeAddress = resolveIp): NodeAddress =
     if (host.endsWith(onionSuffix) && host.length == V2Len + onionSuffix.length) Tor2(host.dropRight(onionSuffix.length), port)
     else if (host.endsWith(onionSuffix) && host.length == V3Len + onionSuffix.length) Tor3(host.dropRight(onionSuffix.length), port)
@@ -179,9 +175,11 @@ case class Domain(domain: String, port: Int) extends NodeAddress {
   override def toString: String = s"$domain:$port"
 }
 
-case class NodeAnnouncement(signature: ByteVector64, features: Features, timestamp: Long,
-                            nodeId: PublicKey, rgbColor: Color, alias: String, addresses: List[NodeAddress],
-                            unknownFields: ByteVector = ByteVector.empty) extends LightningMessage
+case class NodeAnnouncement(signature: ByteVector64, features: Features, timestamp: Long, nodeId: PublicKey, rgbColor: Color,
+                            alias: String, addresses: List[NodeAddress], unknownFields: ByteVector = ByteVector.empty) extends LightningMessage {
+
+  def toRemoteInfo: RemoteNodeInfo = RemoteNodeInfo(nodeId, addresses.minBy { case _: IPv4 => 1 case _: IPv6 => 2 case _ => 3 }, alias)
+}
 
 object ChannelUpdate {
   final val POSITION1NODE: java.lang.Integer = 1
@@ -363,20 +361,14 @@ object SwapOutTransactionDenied {
 
 case class SwapOutTransactionDenied(btcAddress: String, reason: Long) extends SwapOut with ChainSwapMessage
 
-// Trampoline status
-
-sealed trait TrampolineStatus extends LightningMessage
-
-case object TrampolineUndesired extends TrampolineStatus
+// Trampoline
 
 sealed trait HasRelayFee {
   def relayFee(amount: MilliSatoshi): MilliSatoshi
   def cltvExpiryDelta: CltvExpiryDelta
 }
 
-case class TrampolineOn(minimumMsat: MilliSatoshi, routable: Map[Long, MilliSatoshi], feeProportionalMillionths: Long,
-                        exponent: Double, logExponent: Double, cltvExpiryDelta: CltvExpiryDelta) extends TrampolineStatus with HasRelayFee {
-
+case class TrampolineOn(minMsat: MilliSatoshi, maxMsat: MilliSatoshi, feeProportionalMillionths: Long, exponent: Double, logExponent: Double, cltvExpiryDelta: CltvExpiryDelta) extends HasRelayFee { me =>
   def relayFee(amount: MilliSatoshi): MilliSatoshi = trampolineFee(proportionalFee(amount, feeProportionalMillionths).toLong, exponent, logExponent)
 }
 
@@ -384,6 +376,16 @@ case class AvgHopParams(cltvExpiryDelta: CltvExpiryDelta, feeProportionalMillion
   def relayFee(amount: MilliSatoshi): MilliSatoshi = nodeFee(feeBaseMsat, feeProportionalMillionths, amount)
 }
 
-case class ExtraHop(nodeId: PublicKey, shortChannelId: Long, feeBase: MilliSatoshi, feeProportionalMillionths: Long, cltvExpiryDelta: CltvExpiryDelta) extends HasRelayFee {
-  def relayFee(amount: MilliSatoshi): MilliSatoshi = nodeFee(feeBase, feeProportionalMillionths, amount)
+object TrampolineStatus {
+  type NodeIdCrc32Path = List[Long]
+
+  lazy val empty: TrampolineStatus =
+    TrampolineStatus(params = Nil, paths = Nil)
+
+  def fromRemoteInfo(info: RemoteNodeInfo, trampolineOn: TrampolineOn): TrampolineStatus =
+    TrampolineStatus(NodeIdTrampolineParams(info.nodeSpecificPubKey, trampolineOn) :: Nil, paths = Nil)
 }
+
+case class NodeIdTrampolineParams(nodeId: PublicKey, trampolineOn: TrampolineOn)
+
+case class TrampolineStatus(params: List[NodeIdTrampolineParams], paths: List[TrampolineStatus.NodeIdCrc32Path], removed: List[Long] = Nil) extends LightningMessage

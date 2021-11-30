@@ -2,8 +2,6 @@
 <resources>
     <string name="lang">esp</string>
     <string name="app_name">SBW</string>
-
-    <string name="rate">&#9825; Califícanos</string>
     <string name="sources">Ver código fuente</string>
     <string name="twitter">Síguenos en Twitter</string>
     <string name="password">Contraseña de la billetera</string>
@@ -189,9 +187,9 @@
     <string name="tx_description_refunding">Reembolsar saldo de canal</string>
     <string name="tx_description_htlc_claiming">Reclamando pago Lightning</string>
     <string name="tx_description_penalty">Penalización por incumplimiento</string>
-    <string name="tx_description_rbf_boost">Impulsar usando RBF</string>
-    <string name="tx_description_rbf_cancel">Aumentar tarifa con RBF</string>
-    <string name="tx_description_cpfp">Aumentar tarifa con CPFP</string>
+    <string name="tx_description_rbf_cancel">RBF cancelling</string>
+    <string name="tx_description_rbf_boost">RBF boosting</string>
+    <string name="tx_description_cpfp">CPFP boosting</string>
 
     <string name="tx_btc">Transacción Bitcoin</string>
     <string name="tx_ln">Pago Lightning</string>
@@ -351,13 +349,7 @@
     <string name="stats_title_chan_loss"><![CDATA[<b>Tarifa de clausura de canal</b>]]></string>
     <string name="stats_title_chain"><![CDATA[<b>Transacciones Bitcoin</b>]]></string>
     <string name="stats_title_relays"><![CDATA[<b>Retransmisiones Lightning</b>]]></string>
-    <string name="stats_title_network"><![CDATA[<b>Estado de la red</b>]]></string>
     <string name="stats_title_ln"><![CDATA[<b>Pagos Lightning</b>]]></string>
-
-    <string name="stats_item_chain_node"><![CDATA[<b>cadena&#160;nodo</b>&#160;%1$s]]></string>
-    <string name="stats_item_chain_tip"><![CDATA[<b>cadena&#160;tope</b>&#160;%1$s]]></string>
-    <string name="stats_item_graph"><![CDATA[<b>grafo&#160;sync</b>&#160;%1$s]]></string>
-    <string name="stats_item_phc"><![CDATA[<b>PHC&#160;sync</b>&#160;%1$s]]></string>
 
     <string name="stats_item_sent"><![CDATA[<b>enviado</b>&#160;%1$s]]></string>
     <string name="stats_item_received"><![CDATA[<b>recibido</b>&#160;%1$s]]></string>
