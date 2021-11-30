@@ -458,7 +458,6 @@ class OutgoingPaymentSender(val fullTag: FullPaymentTag, val listeners: Iterable
     // This is a terminal method in a sense that it either successfully assigns a given amount to channels or turns a payment into failed state
     val directChansFirst = shuffle(sendable.toSeq) sortBy { case (cnc, _) => if (cnc.commits.remoteInfo.nodeId == data1.cmd.targetNodeId) 0 else 1 }
     // This method always sets a new partId to assigned parts so old payment statuses in data must be cleared before calling it
-
     directChansFirst.foldLeft(Map.empty[ByteVector, PartStatus] -> amount) {
       case (accumulator ~ leftover, cnc ~ chanSendable) if leftover > 0L.msat =>
         // If leftover becomes less than sendable minimum then we must bump it upwards

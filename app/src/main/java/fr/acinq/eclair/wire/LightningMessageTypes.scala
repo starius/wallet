@@ -5,7 +5,7 @@ import fr.acinq.bitcoin.Crypto.{PrivateKey, PublicKey}
 import fr.acinq.bitcoin.{ByteVector32, ByteVector64, Crypto, Protocol, Satoshi}
 import fr.acinq.eclair._
 import fr.acinq.eclair.blockchain.fee.FeeratePerKw
-import fr.acinq.eclair.payment.PaymentRequest.ExtraHop
+import fr.acinq.eclair.payment.PaymentRequest
 import fr.acinq.eclair.router.Announcements
 import immortan.crypto.Tools
 import immortan.{ChannelMaster, LNParams, RemoteNodeInfo}
@@ -202,7 +202,7 @@ case class ChannelUpdate(signature: ByteVector64, chainHash: ByteVector32, short
 
   lazy val core: UpdateCore = UpdateCore(position, shortChannelId, feeBaseMsat, feeProportionalMillionths, cltvExpiryDelta, htlcMaximumMsat)
 
-  def extraHop(nodeId: PublicKey): ExtraHop = ExtraHop(nodeId, shortChannelId, feeBaseMsat, feeProportionalMillionths, cltvExpiryDelta)
+  def extraHop(nodeId: PublicKey): PaymentRequest.ExtraHop = PaymentRequest.ExtraHop(nodeId, shortChannelId, feeBaseMsat, feeProportionalMillionths, cltvExpiryDelta)
 
   // Point useless fields to same object, db-restored should be same, make sure it does not erase channelUpdateChecksumCodec fields
   def lite: ChannelUpdate = copy(signature = ByteVector64.Zeroes, LNParams.chainHash, unknownFields = ByteVector.empty)

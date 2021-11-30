@@ -77,9 +77,10 @@ abstract class PathFinder(val normalBag: NetworkBag, val hostedBag: NetworkBag) 
       val delay = Rx.initDelay(repeat, getLastTotalResyncStamp, RESYNC_PERIOD, preStartMsec = 100)
       subscription = delay.subscribe(_ => me process CMDResync).asSome
 
-    case (request: PathFinderRequest, OPERATIONAL) if data.channels.isEmpty =>
-      // Graph is loaded but empty: likely a first launch or synchronizing
-      request.sender process NotifyNotReady
+//    case (request: PathFinderRequest, OPERATIONAL) if data.channels.isEmpty =>
+//      println("PathFinder: PathFinderRequest OPERATIONAL if data.channels.isEmpty")
+//      // Graph is loaded but empty: likely a first launch or synchronizing
+//      request.sender process NotifyNotReady
 
     case (calc: GetExpectedRouteFees, OPERATIONAL) =>
       val interExpectedFees = List.fill(calc.interHops)(data.avgHopParams)
