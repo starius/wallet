@@ -248,8 +248,8 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
 
       setVis(isVisible = true, rateText)
       setVis(isVisible = true, fiatText)
-      rateText.setText(fiatOrNothing(rate, cardIn).html)
-      fiatText.setText(fiatOrNothing(fiatValue, cardIn).html)
+      rateText.setText(fiatOrNothing(rate, cardIn,"USD/BTC").html)
+      fiatText.setText(fiatOrNothing(fiatValue, cardIn, "USD").html)
 
       totalCapacityText.setText(sumOrNothing(capacity, cardIn).html)
       canReceiveText.setText(sumOrNothing(hc.availableForReceive, cardOut).html)
@@ -416,11 +416,10 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
     else getString(chan_nothing)
   }
 
-  private def fiatOrNothing(amt: Double, mainColor: String): String = {
+  private def fiatOrNothing(amt: Double, mainColor: String, sign: String): String = {
     if (0.0 != amt) {
       val fmt: DecimalFormat = new DecimalFormat("###,###,###.##")
       fmt.setDecimalFormatSymbols(Denomination.symbols)
-      val sign = "USD/BTC"
 
       s"<font color=$mainColor>" + fmt.format(amt) + "</font>" + "\u00A0" + sign
     }
