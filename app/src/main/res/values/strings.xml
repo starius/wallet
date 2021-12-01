@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="lang">eng</string>
-    <string name="app_name">SBW</string>
+    <string name="app_name">TESTNET!</string>
     <string name="sources">View source code</string>
     <string name="twitter">Follow us on twitter</string>
     <string name="password">Wallet password</string>
