@@ -1,6 +1,6 @@
 package com.btcontract.wallettest
 
-import java.util.{Date, TimerTask}
+import java.util.{Date, Timer, TimerTask}
 import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.text.Spanned
@@ -74,7 +74,10 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
 
       val cardView = (getItem(position), card.getTag) match {
         case (ChanAndCommits(chan: ChannelHosted, hc: HostedCommits), view: HostedViewHolder) => view.fill(chan, hc)
-        case (ChanAndCommits(chan: ChannelHosted, hc: HostedCommits), _) => new HostedViewHolder(card).fill(chan, hc)
+        case (ChanAndCommits(chan: ChannelHosted, hc: HostedCommits), _) =>
+          val hview = new HostedViewHolder(card).fill(chan, hc)
+          hview.queryRates(chan)
+          hview
         case (ChanAndCommits(chan: ChannelNormal, commits: NormalCommits), view: NormalViewHolder) => view.fill(chan, commits)
         case (ChanAndCommits(chan: ChannelNormal, commits: NormalCommits), _) => new NormalViewHolder(card).fill(chan, commits)
         case _ => throw new RuntimeException
@@ -102,6 +105,7 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
     val peerAddress: TextView = swipeWrap.findViewById(R.id.peerAddress).asInstanceOf[TextView]
     val chanState: View = swipeWrap.findViewById(R.id.chanState).asInstanceOf[View]
 
+    val serverRateText: TextView = swipeWrap.findViewById(R.id.serverRateText).asInstanceOf[TextView]
     val rateText: TextView = swipeWrap.findViewById(R.id.fiatRateText).asInstanceOf[TextView]
     val fiatText: TextView = swipeWrap.findViewById(R.id.fiatValueText).asInstanceOf[TextView]
     val canSendText: TextView = swipeWrap.findViewById(R.id.canSendText).asInstanceOf[TextView]
@@ -123,6 +127,7 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
         swipeWrap.findViewById(R.id.canReceive).asInstanceOf[View] ::
         swipeWrap.findViewById(R.id.canSend).asInstanceOf[View] ::
         swipeWrap.findViewById(R.id.reserve).asInstanceOf[View] ::
+        swipeWrap.findViewById(R.id.serverRate).asInstanceOf[View] ::
         Nil
 
     def visibleExcept(goneRes: Int*): Unit = for (wrap <- wrappers) {
@@ -149,14 +154,14 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
         setVis(isVisible = true, extraInfoText)
         extraInfoText.setText(getString(ln_info_opening).html)
         channelCard setOnClickListener bringChanOptions(normalChanActions.take(2), cs)
-        visibleExcept(R.id.progressBars, R.id.fiatRate, R.id.fiatValue, R.id.reserve, R.id.paymentsInFlight, R.id.canReceive, R.id.canSend)
+        visibleExcept(R.id.progressBars, R.id.fiatRate, R.id.fiatValue, R.id.reserve, R.id.serverRate, R.id.paymentsInFlight, R.id.canReceive, R.id.canSend)
       } else if (Channel isOperational chan) {
         channelCard setOnClickListener bringChanOptions(normalChanActions, cs)
         setVis(isVisible = cs.updateOpt.isEmpty || tempFeeMismatch, extraInfoText)
         if (cs.updateOpt.isEmpty) extraInfoText.setText(ln_info_no_update)
         if (tempFeeMismatch) extraInfoText.setText(ln_info_fee_mismatch)
         visibleExcept(goneRes = -1)
-        visibleExcept(R.id.fiatRate, R.id.fiatValue, R.id.reserve)
+        visibleExcept(R.id.fiatRate, R.id.fiatValue, R.id.reserve, R.id.serverRate)
       } else {
         val closeInfoRes = chan.data match {
           case _: DATA_WAIT_FOR_REMOTE_PUBLISH_FUTURE_COMMITMENT => ln_info_await_close
@@ -169,7 +174,7 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
         }
 
         channelCard setOnClickListener bringChanOptions(normalChanActions.take(2), cs)
-        visibleExcept(R.id.progressBars, R.id.fiatRate, R.id.fiatValue, R.id.reserve, R.id.canReceive, R.id.canSend)
+        visibleExcept(R.id.progressBars, R.id.fiatRate, R.id.fiatValue, R.id.reserve, R.id.serverRate, R.id.canReceive, R.id.canSend)
         extraInfoText.setText(getString(closeInfoRes).html)
         setVis(isVisible = true, extraInfoText)
       }
@@ -199,13 +204,28 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
   }
 
   class HostedViewHolder(view: View) extends ChanCardViewHolder(view) {
+    var queryTimer: Timer = null
+
+    def onDetachedFromWindow: Unit = {
+      queryTimer.cancel()
+    }
+
+    def queryRates(chan: ChannelHosted): Unit = queryTimer = RepeatUITask(10000L, {
+      chan process CMD_HOSTED_QUERY_RATE()
+      println("Requested server rate")
+    })
+
     def fill(chan: ChannelHosted, hc: HostedCommits): HostedViewHolder = {
-      val rate = 100000000000L.toDouble / hc.lastCrossSignedState.rate.underlying.toDouble
+
+      def toHumanRate(x: MilliSatoshi): Double = 100000000000.0 / x.toLong.toDouble
+
+      val rate = toHumanRate(hc.lastCrossSignedState.rate)
+      val serverRate = toHumanRate(hc.currentHostRate)
       val capacity = hc.lastCrossSignedState.initHostedChannel.channelCapacityMsat
       val inFlight = hc.nextLocalSpec.htlcs.foldLeft(0L.msat)(_ + _.add.amountMsat)
       val barCanReceive = (hc.availableForReceive.toLong / capacity.truncateToSatoshi.toLong).toInt
       val barCanSend = (hc.availableForSend.toLong / capacity.truncateToSatoshi.toLong).toInt
-      val fiatValue = barCanSend.toDouble * rate / 10000.0
+      val fiatValue = hc.reserveSats.toLong.toDouble / hc.lastCrossSignedState.rate.toLong.toDouble
 
       val errorText = (hc.localError, hc.remoteError) match {
         case Some(error) ~ _ => s"LOCAL: ${ErrorExt extractDescription error}"
@@ -248,16 +268,18 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
       baseBar.setSecondaryProgress(barCanSend + barCanReceive)
       baseBar.setProgress(barCanSend)
 
+      setVis(isVisible = true, serverRateText)
       setVis(isVisible = true, rateText)
       setVis(isVisible = true, fiatText)
       setVis(isVisible = true, reserveText)
+      serverRateText.setText(fiatOrNothing(serverRate, cardIn,"USD/BTC").html)
       rateText.setText(fiatOrNothing(rate, cardIn,"USD/BTC").html)
       fiatText.setText(fiatOrNothing(fiatValue, cardIn, "USD").html)
 
       totalCapacityText.setText(sumOrNothing(capacity, cardIn).html)
       canReceiveText.setText(sumOrNothing(hc.availableForReceive, cardOut).html)
       canSendText.setText(sumOrNothing(hc.availableForSend, cardIn).html)
-      reserveText.setText(sumOrNothing(hc.availableForSend, cardIn).html)
+      reserveText.setText(sumOrNothing(hc.reserveSats, cardIn).html)
       paymentsInFlightText.setText(sumOrNothing(inFlight, cardIn).html)
 
       // Order messages by degree of importance since user can only see a single one

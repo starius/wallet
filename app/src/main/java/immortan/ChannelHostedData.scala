@@ -18,7 +18,7 @@ case class WaitRemoteHostedStateUpdate(remoteInfo: RemoteNodeInfo, hc: HostedCom
 case class HostedCommits(remoteInfo: RemoteNodeInfo, localSpec: CommitmentSpec, lastCrossSignedState: LastCrossSignedState,
                          nextLocalUpdates: List[UpdateMessage], nextRemoteUpdates: List[UpdateMessage], updateOpt: Option[ChannelUpdate], postErrorOutgoingResolvedIds: Set[Long],
                          localError: Option[Fail], remoteError: Option[Fail], resizeProposal: Option[ResizeChannel] = None, overrideProposal: Option[StateOverride] = None,
-                         extParams: List[ExtParams] = Nil, startedAt: Long = System.currentTimeMillis) extends PersistentChannelData with Commitments { me =>
+                         extParams: List[ExtParams] = Nil, startedAt: Long = System.currentTimeMillis, currentHostRate: MilliSatoshi = 0.msat) extends PersistentChannelData with Commitments { me =>
 
   lazy val error: Option[Fail] = localError.orElse(remoteError)
 
@@ -45,7 +45,10 @@ case class HostedCommits(remoteInfo: RemoteNodeInfo, localSpec: CommitmentSpec, 
 
   lazy val availableForReceive: MilliSatoshi = nextLocalSpec.toRemote
 
-  lazy val availableForSend: MilliSatoshi = nextLocalSpec.toLocal
+  // Calculation from constant equation s1 / f1 = s2 / f2
+  lazy val availableForSend: MilliSatoshi = MilliSatoshi(math round currentHostRate.toLong.toDouble / lastCrossSignedState.rate.toLong.toDouble * reserveSats.toLong.toDouble)
+
+  lazy val reserveSats: MilliSatoshi = nextLocalSpec.toLocal
 
   override def ourBalance: MilliSatoshi = availableForSend
 

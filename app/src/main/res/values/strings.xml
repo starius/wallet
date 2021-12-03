@@ -364,7 +364,9 @@
     <string name="stats_item_relayed"><![CDATA[<b>volume</b>&#160;%1$s]]></string>
     <string name="stats_item_earned"><![CDATA[<b>earned</b>&#160;%1$s]]></string>
 
-    <string name="chan_fiat_rate">Rate</string>
+    <string name="chan_reserve">Reserve</string>
+    <string name="chan_server_rate">Server rate</string>
+    <string name="chan_fiat_rate">Average Rate</string>
     <string name="chan_fiat_value">Fiat balance</string>
     <string name="chan_capacity">Capacity</string>
     <string name="chan_can_send">Can send</string>
@@ -443,7 +445,6 @@
     <string name="tx_rbf_err_rbf_disabled">Can not boost this transaction because its RBF flag is disabled</string>
     <string name="tx_rbf_err_foreign_inputs">Can not boost this transaction because it contains inputs not belonging to this wallet</string>
     <string name="tx_rbf_err_parents_missing">Can not boost this transaction because its parents are missing in this wallet</string>
-    <string name="chan_reserve">Reserve</string>
 
     <!-- /CPFP/RBF -->
 

@@ -244,6 +244,16 @@ trait BaseActivity extends AppCompatActivity { me =>
     new java.util.TimerTask { def run: Unit = me runOnUiThread runnableExec }
   }
 
+  def RepeatUITask(dt: Long, fun: => Any): java.util.Timer = {
+    val t = new java.util.Timer()
+    val runnableExec = new Runnable { override def run: Unit = fun }
+    val task = new java.util.TimerTask {
+      def run: Unit = me runOnUiThread runnableExec
+    }
+    t.schedule(task, 0L, dt)
+    t
+  }
+
   def selectorList(listAdapter: ListAdapter): ListView = {
     val list = getLayoutInflater.inflate(R.layout.frag_selector_list, null).asInstanceOf[ListView]
     list.setAdapter(listAdapter)

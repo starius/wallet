@@ -2,6 +2,7 @@ package fr.acinq.eclair.wire
 
 import fr.acinq.bitcoin.DeterministicWallet.{ExtendedPrivateKey, ExtendedPublicKey, KeyPath}
 import fr.acinq.bitcoin.{OutPoint, Transaction, TxOut}
+import fr.acinq.eclair._
 import fr.acinq.eclair.blockchain.TxConfirmedAt
 import fr.acinq.eclair.channel._
 import fr.acinq.eclair.crypto.ShaChain
@@ -9,7 +10,7 @@ import fr.acinq.eclair.transactions.Transactions._
 import fr.acinq.eclair.transactions._
 import fr.acinq.eclair.wire.CommonCodecs._
 import fr.acinq.eclair.wire.LightningMessageCodecs._
-import fr.acinq.eclair.{FeatureSupport, Features}
+import fr.acinq.eclair.{FeatureSupport, Features, MilliSatoshi}
 import immortan.{HostedCommits, RemoteNodeInfo}
 import scodec.bits.ByteVector
 import scodec.codecs._
@@ -305,7 +306,8 @@ object ChannelCodecs {
       (optional(bool8, lengthDelimited(resizeChannelCodec)) withContext "resizeProposal") ::
       (optional(bool8, lengthDelimited(stateOverrideCodec)) withContext "overrideProposal") ::
       (listOfN(uint16, extParamsCodec) withContext "extParams") ::
-      (int64 withContext "startedAt")
+      (int64 withContext "startedAt") ::
+      (millisatoshi withContext "currentHostRate")
   }.as[HostedCommits]
 
   val persistentDataCodec =

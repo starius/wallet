@@ -157,6 +157,16 @@ abstract class ChannelHosted extends Channel { me =>
     case (hc: HostedCommits, remoteSU: StateUpdate, OPEN) if (remoteSU.localSigOfRemoteLCSS != hc.lastCrossSignedState.remoteSigOfLocal) && hc.error.isEmpty =>
       attemptStateUpdate(remoteSU, hc)
 
+    case (hc: HostedCommits, msg: ReplyCurrentRate, OPEN) =>
+      println(s"Got new server rate ${msg.rate}")
+      val hc1 = hc.copy(currentHostRate = msg.rate)
+      STORE(hc1)
+      BECOME(hc1, state)
+      events.notifyResolvers
+
+    case (hc: HostedCommits, CMD_HOSTED_QUERY_RATE(), OPEN) =>
+      println("Requesting server rate")
+      SEND(QueryCurrentRate())
 
     case (hc: HostedCommits, cmd: CMD_ADD_HTLC, OPEN | SLEEPING) =>
       hc.sendAdd(cmd, blockHeight = LNParams.blockCount.get) match {
@@ -254,7 +264,6 @@ abstract class ChannelHosted extends Channel { me =>
       rejectOverriddenOutgoingAdds(hc, hc1)
       // We may have pendig incoming
       events.notifyResolvers
-
 
     case (hc: HostedCommits, remote: Fail, WAIT_FOR_ACCEPT | OPEN) if hc.remoteError.isEmpty =>
       StoreBecomeSend(data1 = hc.copy(remoteError = remote.asSome), OPEN)
