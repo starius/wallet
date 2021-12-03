@@ -443,6 +443,7 @@
     <string name="tx_rbf_err_rbf_disabled">No se puede impulsar esta transaccion porque RBF esta desactivado</string>
     <string name="tx_rbf_err_foreign_inputs">No se puede impulsar esta transaccion porque contiene entradas que no pertenecen a esta billetera</string>
     <string name="tx_rbf_err_parents_missing">No se puede impulsar esta transaccion porque sus padres éstan ausentes en esta billetera</string>
+    <string name="chan_reserve">Reserve</string>
 
     <!-- /CPFP/RBF -->
 

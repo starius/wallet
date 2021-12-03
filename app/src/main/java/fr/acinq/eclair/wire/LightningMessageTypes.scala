@@ -312,6 +312,12 @@ case class QueryPreimages(hashes: List[ByteVector32] = Nil) extends HostedChanne
 
 case class ReplyPreimages(preimages: List[ByteVector32] = Nil) extends HostedChannelMessage
 
+// Fiat
+
+case class QueryCurrentRate() extends HostedChannelMessage
+
+case class ReplyCurrentRate(rate: MilliSatoshi) extends HostedChannelMessage
+
 // Swap In/Out
 
 sealed trait ChainSwapMessage extends LightningMessage

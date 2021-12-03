@@ -3,8 +3,8 @@ package fr.acinq.eclair.wire
 import fr.acinq.eclair._
 import fr.acinq.eclair.wire.ChannelCodecs._
 import fr.acinq.eclair.wire.CommonCodecs._
-import scodec.Codec
-import scodec.bits.ByteVector
+import scodec.{Attempt, Codec, DecodeResult}
+import scodec.bits.{BitVector, ByteVector}
 import scodec.codecs._
 
 
@@ -341,6 +341,8 @@ object LightningMessageCodecs {
 
   lazy val replyPreimagesCodec = (listOfN(uint16, bytes32) withContext "preimages").as[ReplyPreimages]
 
+  lazy val replyCurrentRateCodec = (millisatoshi withContext "rate").as[ReplyCurrentRate]
+
   final val HC_INVOKE_HOSTED_CHANNEL_TAG = 55535
 
   final val HC_INIT_HOSTED_CHANNEL_TAG = 55533
@@ -376,7 +378,6 @@ object LightningMessageCodecs {
 
   final val PHC_UPDATE_SYNC_TAG = 54507
 
-
   final val HC_UPDATE_ADD_HTLC_TAG = 53505
 
   final val HC_UPDATE_FULFILL_HTLC_TAG = 53503
@@ -386,6 +387,11 @@ object LightningMessageCodecs {
   final val HC_UPDATE_FAIL_MALFORMED_HTLC_TAG = 53499
 
   final val HC_ERROR_TAG = 53497
+
+
+  final val HC_QUERY_RATE_TAG = 52513
+
+  final val HC_REPLY_RATE_TAG = 52511
 
   // SWAP-IN
 
@@ -571,6 +577,9 @@ object LightningMessageCodecs {
       case HC_UPDATE_ADD_HTLC_TAG => updateAddHtlcCodec
       case HC_ERROR_TAG => failCodec
 
+      case HC_QUERY_RATE_TAG => provide(QueryCurrentRate())
+      case HC_REPLY_RATE_TAG => replyCurrentRateCodec
+
       case SWAP_IN_REQUEST_MESSAGE_TAG => provide(SwapInRequest)
       case SWAP_IN_PAYMENT_REQUEST_MESSAGE_TAG => swapInPaymentRequestCodec
       case SWAP_IN_PAYMENT_DENIED_MESSAGE_TAG => swapInPaymentDeniedCodec
@@ -583,6 +592,7 @@ object LightningMessageCodecs {
       case SWAP_OUT_TRANSACTION_DENIED_MESSAGE_TAG => swapOutTransactionDeniedCodec
       case SWAP_OUT_FEERATES_MESSAGE_TAG => swapOutFeeratesCodec
       case TRAMPOLINE_PARAMS_TAG => trampolineStatusCodec
+
       case _ => throw new RuntimeException
     }
 
@@ -605,6 +615,8 @@ object LightningMessageCodecs {
     case msg: QueryPreimages => UnknownMessage(HC_QUERY_PREIMAGES_TAG, queryPreimagesCodec.encode(msg).require.toByteVector)
     case msg: ReplyPreimages => UnknownMessage(HC_REPLY_PREIMAGES_TAG, replyPreimagesCodec.encode(msg).require.toByteVector)
     case msg: AskBrandingInfo => UnknownMessage(HC_ASK_BRANDING_INFO, askBrandingInfoCodec.encode(msg).require.toByteVector)
+    case msg: QueryCurrentRate => UnknownMessage(HC_QUERY_RATE_TAG, provide(QueryCurrentRate).encode(QueryCurrentRate).require.toByteVector)
+    case msg: ReplyCurrentRate => UnknownMessage(HC_REPLY_RATE_TAG, replyCurrentRateCodec.encode(msg).require.toByteVector)
 
     case SwapInRequest => UnknownMessage(SWAP_IN_REQUEST_MESSAGE_TAG, provide(SwapInRequest).encode(SwapInRequest).require.toByteVector)
     case msg: SwapInPaymentRequest => UnknownMessage(SWAP_IN_PAYMENT_REQUEST_MESSAGE_TAG, swapInPaymentRequestCodec.encode(msg).require.toByteVector)

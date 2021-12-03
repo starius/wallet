@@ -443,6 +443,7 @@
     <string name="tx_rbf_err_rbf_disabled">Can not boost this transaction because its RBF flag is disabled</string>
     <string name="tx_rbf_err_foreign_inputs">Can not boost this transaction because it contains inputs not belonging to this wallet</string>
     <string name="tx_rbf_err_parents_missing">Can not boost this transaction because its parents are missing in this wallet</string>
+    <string name="chan_reserve">Reserve</string>
 
     <!-- /CPFP/RBF -->
 
