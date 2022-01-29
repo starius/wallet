@@ -231,7 +231,7 @@
     <string name="rpa_title">Соединение с узлом</string>
     <string name="rpa_disconnected">Удаленный узел отключился</string>
     <string name="rpa_no_feature_support">Невозможно открыть канал с этим узлом потмоу что он не поддерживает важные особенности протокола</string>
-    <string name="rpa_hc_warn"><![CDATA[<br><b>Внимание!</b><br><br>Ваши средства в hosted-канале будут храниться на стороне хоста: убедитесь, что вы доверяете этому ему!]]></string>
+    <string name="rpa_hc_warn"><![CDATA[<br><b>Внимание!</b><br><br>Ваши средства в hosted-канале будут храниться на стороне хоста: убедитесь, что вы доверяете этому ему! Баланс в этом канале привязан к цене евро, количество сатоши может изменяться в зависимости от движения цены.]]></string>
     <string name="rpa_request_channel">Поделитесь своим node ID с удаленным узлом и оставьте открытой эту страницу до получения входящего канала</string>
     <string name="rpa_request_hc">Запросить hosted-канал</string>
     <string name="rpa_share_node_id">Поделиться Node ID</string>

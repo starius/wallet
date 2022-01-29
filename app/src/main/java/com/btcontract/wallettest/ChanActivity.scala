@@ -272,9 +272,9 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
       setVis(isVisible = true, rateText)
       setVis(isVisible = true, fiatText)
       setVis(isVisible = true, reserveText)
-      serverRateText.setText(fiatOrNothing(serverRate, cardIn,"USD/BTC").html)
-      rateText.setText(fiatOrNothing(rate, cardIn,"USD/BTC").html)
-      fiatText.setText(fiatOrNothing(fiatValue, cardIn, "USD").html)
+      serverRateText.setText(fiatOrNothing(serverRate, cardIn,"EUR/BTC").html)
+      rateText.setText(fiatOrNothing(rate, cardIn,"EUR/BTC").html)
+      fiatText.setText(fiatOrNothing(fiatValue, cardIn, "EUR").html)
 
       totalCapacityText.setText(sumOrNothing(capacity, cardIn).html)
       canReceiveText.setText(sumOrNothing(hc.availableForReceive, cardOut).html)
