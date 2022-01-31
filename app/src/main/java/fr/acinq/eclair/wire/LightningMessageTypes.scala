@@ -298,6 +298,14 @@ case class ResizeChannel(newCapacity: Satoshi, clientSig: ByteVector64 = ByteVec
   lazy val newCapacityMsatU64: UInt64 = UInt64(newCapacity.toMilliSatoshi.toLong)
 }
 
+case class MarginChannel(newCapacity: Satoshi, newBalance: Satoshi, clientSig: ByteVector64 = ByteVector64.Zeroes) extends HostedChannelMessage {
+  def isRemoteMargined(remote: LastCrossSignedState): Boolean = newCapacity.toMilliSatoshi == remote.initHostedChannel.channelCapacityMsat && newBalance.toMilliSatoshi == remote.remoteBalanceMsat
+  def sign(priv: PrivateKey): MarginChannel = MarginChannel(clientSig = Crypto.sign(Crypto.sha256(sigMaterial), priv), newCapacity = newCapacity, newBalance = newBalance)
+  def verifyClientSig(pubKey: PublicKey): Boolean = Crypto.verifySignature(Crypto.sha256(sigMaterial), clientSig, pubKey)
+  lazy val sigMaterial: ByteVector = Protocol.writeUInt64(newCapacity.toLong, ByteOrder.LITTLE_ENDIAN)
+  lazy val newCapacityMsatU64: UInt64 = UInt64(newCapacity.toMilliSatoshi.toLong)
+}
+
 case class AskBrandingInfo(chainHash: ByteVector32) extends HostedChannelMessage
 
 // PHC

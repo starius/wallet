@@ -294,7 +294,7 @@ class RemotePeerActivity extends ChanErrorHandlerActivity with ExternalDataCheck
         def onFailure(reason: Throwable): Unit = UITask {
           // We need to disconnect instead of just showing an error because of HC specifics
           // remote peer awaits for our response and won't react to another HC open request
-          WalletApp.app.quickToast(reason.getMessage)
+          WalletApp.app.quickToast(reason.toString)
           disconnectListenersAndFinish
           whenBackPressed.run
         }.run

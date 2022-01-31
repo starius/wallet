@@ -304,6 +304,7 @@ object ChannelCodecs {
       (optional(bool8, lengthDelimited(failCodec)) withContext "localError") ::
       (optional(bool8, lengthDelimited(failCodec)) withContext "remoteError") ::
       (optional(bool8, lengthDelimited(resizeChannelCodec)) withContext "resizeProposal") ::
+      (optional(bool8, lengthDelimited(marginChannelCodec)) withContext "marginProposal") ::
       (optional(bool8, lengthDelimited(stateOverrideCodec)) withContext "overrideProposal") ::
       (listOfN(uint16, extParamsCodec) withContext "extParams") ::
       (int64 withContext "startedAt") ::

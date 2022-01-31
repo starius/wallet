@@ -17,7 +17,7 @@ case class WaitRemoteHostedStateUpdate(remoteInfo: RemoteNodeInfo, hc: HostedCom
 
 case class HostedCommits(remoteInfo: RemoteNodeInfo, localSpec: CommitmentSpec, lastCrossSignedState: LastCrossSignedState,
                          nextLocalUpdates: List[UpdateMessage], nextRemoteUpdates: List[UpdateMessage], updateOpt: Option[ChannelUpdate], postErrorOutgoingResolvedIds: Set[Long],
-                         localError: Option[Fail], remoteError: Option[Fail], resizeProposal: Option[ResizeChannel] = None, overrideProposal: Option[StateOverride] = None,
+                         localError: Option[Fail], remoteError: Option[Fail], resizeProposal: Option[ResizeChannel] = None, marginProposal: Option[MarginChannel] = None, overrideProposal: Option[StateOverride] = None,
                          extParams: List[ExtParams] = Nil, startedAt: Long = System.currentTimeMillis, currentHostRate: MilliSatoshi = 0.msat) extends PersistentChannelData with Commitments { me =>
 
   lazy val error: Option[Fail] = localError.orElse(remoteError)
@@ -66,6 +66,13 @@ case class HostedCommits(remoteInfo: RemoteNodeInfo, localSpec: CommitmentSpec, 
       println(s"averageRate: f1=${f1}, f2=${f2}, s1=${s1}, s2=${s2}, d2 = ${s2 - s1}, invRate = ${invRate}")
       MilliSatoshi(math round (1/invRate))
     }
+  }
+
+  def nextFiatMargin(newRate: MilliSatoshi) : MilliSatoshi = {
+    val price = 1.0 / newRate.toLong.toDouble
+    val capacity = lastCrossSignedState.initHostedChannel.channelCapacityMsat
+    val s = (capacity - lastCrossSignedState.localBalanceMsat).toLong.toDouble
+    MilliSatoshi((price * s).round)
   }
 
   def nextLocalUnsignedLCSSWithRate(blockDay: Long, newRate: MilliSatoshi): LastCrossSignedState = {
@@ -118,4 +125,11 @@ case class HostedCommits(remoteInfo: RemoteNodeInfo, localSpec: CommitmentSpec, 
       .modify(_.lastCrossSignedState.initHostedChannel.channelCapacityMsat).setTo(resize.newCapacity.toMilliSatoshi)
       .modify(_.localSpec.toRemote).using(_ + resize.newCapacity - lastCrossSignedState.initHostedChannel.channelCapacityMsat)
       .modify(_.resizeProposal).setTo(None)
+
+  def withMargin(margin: MarginChannel): HostedCommits =
+    me.modify(_.lastCrossSignedState.initHostedChannel.maxHtlcValueInFlightMsat).setTo(margin.newCapacityMsatU64)
+      .modify(_.lastCrossSignedState.initHostedChannel.channelCapacityMsat).setTo(margin.newCapacity.toMilliSatoshi)
+      .modify(_.localSpec.toRemote).using(_ + margin.newCapacity - lastCrossSignedState.initHostedChannel.channelCapacityMsat)
+      .modify(_.localSpec.toLocal).using(_ => margin.newBalance.toMilliSatoshi)
+      .modify(_.marginProposal).setTo(None)
 }

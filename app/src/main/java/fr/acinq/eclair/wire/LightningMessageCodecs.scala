@@ -331,6 +331,12 @@ object LightningMessageCodecs {
       (bytes64 withContext "clientSig")
   }.as[ResizeChannel]
 
+  val marginChannelCodec = {
+    (satoshi withContext "newCapacity") ::
+    (satoshi withContext "newBalance") ::
+      (bytes64 withContext "clientSig")
+  }.as[MarginChannel]
+
   val askBrandingInfoCodec = (bytes32 withContext "chainHash").as[AskBrandingInfo]
 
   val queryPublicHostedChannelsCodec = (bytes32 withContext "chainHash").as[QueryPublicHostedChannels]
@@ -392,6 +398,8 @@ object LightningMessageCodecs {
   final val HC_QUERY_RATE_TAG = 52513
 
   final val HC_REPLY_RATE_TAG = 52511
+
+  final val HC_MARGIN_CHANNEL_TAG = 53495
 
   // SWAP-IN
 
@@ -558,6 +566,7 @@ object LightningMessageCodecs {
       case HC_INIT_HOSTED_CHANNEL_TAG => initHostedChannelCodec
       case HC_STATE_OVERRIDE_TAG => stateOverrideCodec
       case HC_RESIZE_CHANNEL_TAG => resizeChannelCodec
+      case HC_MARGIN_CHANNEL_TAG => marginChannelCodec
       case HC_STATE_UPDATE_TAG => stateUpdateCodec
 
       case HC_QUERY_PUBLIC_HOSTED_CHANNELS_TAG => queryPublicHostedChannelsCodec
@@ -608,6 +617,7 @@ object LightningMessageCodecs {
     case msg: InitHostedChannel => UnknownMessage(HC_INIT_HOSTED_CHANNEL_TAG, initHostedChannelCodec.encode(msg).require.toByteVector)
     case msg: StateOverride => UnknownMessage(HC_STATE_OVERRIDE_TAG, stateOverrideCodec.encode(msg).require.toByteVector)
     case msg: ResizeChannel => UnknownMessage(HC_RESIZE_CHANNEL_TAG, resizeChannelCodec.encode(msg).require.toByteVector)
+    case msg: MarginChannel => UnknownMessage(HC_MARGIN_CHANNEL_TAG, marginChannelCodec.encode(msg).require.toByteVector)
     case msg: StateUpdate => UnknownMessage(HC_STATE_UPDATE_TAG, stateUpdateCodec.encode(msg).require.toByteVector)
 
     case msg: QueryPublicHostedChannels => UnknownMessage(HC_QUERY_PUBLIC_HOSTED_CHANNELS_TAG, queryPublicHostedChannelsCodec.encode(msg).require.toByteVector)
