@@ -92,7 +92,7 @@ case class CMD_CLOSE(scriptPubKey: Option[ByteVector], force: Boolean) extends C
 case class CMD_HOSTED_STATE_OVERRIDE(so: StateOverride) extends Command
 case class CMD_HOSTED_QUERY_RATE() extends Command
 case class HC_CMD_RESIZE(delta: Satoshi) extends Command
-case class HC_CMD_MARGIN(remoteNodeId: PublicKey, newCapacity: Satoshi, newBalance: Satoshi) extends Command
+case class HC_CMD_MARGIN(newCapacity: Satoshi, newBalance: Satoshi) extends Command
 case object CMD_SOCKET_OFFLINE extends Command
 case object CMD_SOCKET_ONLINE extends Command
 case object CMD_CHECK_FEERATE extends Command

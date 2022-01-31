@@ -15,6 +15,13 @@ case class WaitRemoteHostedReply(remoteInfo: RemoteNodeInfo, refundScriptPubKey:
 
 case class WaitRemoteHostedStateUpdate(remoteInfo: RemoteNodeInfo, hc: HostedCommits) extends ChannelData
 
+object HostedCommits {
+  /// How much sats we should have in the channel to cover sharp price movements
+  val marginReserveFactor: Double = 1.2
+  /// Defines a increase value for the channel capacity if we trying to increase it due the margin request
+  val marginCapacityFactor: Double = 1.5
+}
+
 case class HostedCommits(remoteInfo: RemoteNodeInfo, localSpec: CommitmentSpec, lastCrossSignedState: LastCrossSignedState,
                          nextLocalUpdates: List[UpdateMessage], nextRemoteUpdates: List[UpdateMessage], updateOpt: Option[ChannelUpdate], postErrorOutgoingResolvedIds: Set[Long],
                          localError: Option[Fail], remoteError: Option[Fail], resizeProposal: Option[ResizeChannel] = None, marginProposal: Option[MarginChannel] = None, overrideProposal: Option[StateOverride] = None,
@@ -50,6 +57,10 @@ case class HostedCommits(remoteInfo: RemoteNodeInfo, localSpec: CommitmentSpec, 
 
   lazy val reserveSats: MilliSatoshi = nextLocalSpec.toLocal
 
+  lazy val fiatValue: Double = reserveSats.toLong.toDouble / lastCrossSignedState.rate.toLong.toDouble
+
+  lazy val capacity: MilliSatoshi = lastCrossSignedState.initHostedChannel.channelCapacityMsat
+
   override def ourBalance: MilliSatoshi = availableForSend
 
   def averageRate(oldSats: MilliSatoshi, newSats: MilliSatoshi, oldRate: MilliSatoshi, newRate: MilliSatoshi): MilliSatoshi = {
@@ -69,10 +80,29 @@ case class HostedCommits(remoteInfo: RemoteNodeInfo, localSpec: CommitmentSpec, 
   }
 
   def nextFiatMargin(newRate: MilliSatoshi) : MilliSatoshi = {
-    val price = 1.0 / newRate.toLong.toDouble
-    val capacity = lastCrossSignedState.initHostedChannel.channelCapacityMsat
-    val s = (capacity - lastCrossSignedState.localBalanceMsat).toLong.toDouble
-    MilliSatoshi((price * s).round)
+    MilliSatoshi((HostedCommits.marginReserveFactor * fiatValue * newRate.toLong.toDouble).round)
+  }
+
+  def nextMarginCapacity(newMargin: MilliSatoshi) : MilliSatoshi = {
+    MilliSatoshi((HostedCommits.marginCapacityFactor * capacity.toLong.toDouble).round)
+  }
+
+  def nextMarginResize() : Option[HC_CMD_MARGIN] = {
+    if (currentHostRate > 0) {
+      val newMargin = nextFiatMargin(currentHostRate)
+      if (newMargin > reserveSats) {
+        val newCapacity = if (newMargin > capacity) {
+          nextMarginCapacity(newMargin)
+        } else {
+          capacity
+        }
+        Some(HC_CMD_MARGIN(newCapacity.truncateToSatoshi, newMargin.truncateToSatoshi))
+      } else {
+        None
+      }
+    } else {
+      None
+    }
   }
 
   def nextLocalUnsignedLCSSWithRate(blockDay: Long, newRate: MilliSatoshi): LastCrossSignedState = {

@@ -225,7 +225,6 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
       val inFlight = hc.nextLocalSpec.htlcs.foldLeft(0L.msat)(_ + _.add.amountMsat)
       val barCanReceive = (hc.availableForReceive.toLong / capacity.truncateToSatoshi.toLong).toInt
       val barCanSend = (hc.availableForSend.toLong / capacity.truncateToSatoshi.toLong).toInt
-      val fiatValue = hc.reserveSats.toLong.toDouble / hc.lastCrossSignedState.rate.toLong.toDouble
 
       val errorText = (hc.localError, hc.remoteError) match {
         case Some(error) ~ _ => s"LOCAL: ${ErrorExt extractDescription error}"
@@ -274,7 +273,7 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
       setVis(isVisible = true, reserveText)
       serverRateText.setText(fiatOrNothing(serverRate, cardIn,"EUR/BTC").html)
       rateText.setText(fiatOrNothing(rate, cardIn,"EUR/BTC").html)
-      fiatText.setText(fiatOrNothing(fiatValue, cardIn, "EUR").html)
+      fiatText.setText(fiatOrNothing(hc.fiatValue, cardIn, "EUR").html)
 
       totalCapacityText.setText(sumOrNothing(capacity, cardIn).html)
       canReceiveText.setText(sumOrNothing(hc.availableForReceive, cardOut).html)
