@@ -16,8 +16,6 @@ case class WaitRemoteHostedReply(remoteInfo: RemoteNodeInfo, refundScriptPubKey:
 case class WaitRemoteHostedStateUpdate(remoteInfo: RemoteNodeInfo, hc: HostedCommits) extends ChannelData
 
 object HostedCommits {
-  /// How much sats we should have in the channel to cover sharp price movements
-  val marginReserveFactor: Double = 1.2
   /// Defines a increase value for the channel capacity if we trying to increase it due the margin request
   val marginCapacityFactor: Double = 1.5
 }
@@ -61,6 +59,8 @@ case class HostedCommits(remoteInfo: RemoteNodeInfo, localSpec: CommitmentSpec, 
 
   lazy val capacity: MilliSatoshi = lastCrossSignedState.initHostedChannel.channelCapacityMsat
 
+  lazy val currentRate: MilliSatoshi = lastCrossSignedState.rate
+
   override def ourBalance: MilliSatoshi = availableForSend
 
   def averageRate(oldSats: MilliSatoshi, newSats: MilliSatoshi, oldRate: MilliSatoshi, newRate: MilliSatoshi): MilliSatoshi = {
@@ -80,23 +80,23 @@ case class HostedCommits(remoteInfo: RemoteNodeInfo, localSpec: CommitmentSpec, 
   }
 
   def nextFiatMargin(newRate: MilliSatoshi) : MilliSatoshi = {
-    MilliSatoshi((HostedCommits.marginReserveFactor * fiatValue * newRate.toLong.toDouble).round)
+    MilliSatoshi((fiatValue * newRate.toLong.toDouble).round)
   }
 
   def nextMarginCapacity(newMargin: MilliSatoshi) : MilliSatoshi = {
     MilliSatoshi((HostedCommits.marginCapacityFactor * capacity.toLong.toDouble).round)
   }
 
-  def nextMarginResize() : Option[HC_CMD_MARGIN] = {
-    if (currentHostRate > 0) {
-      val newMargin = nextFiatMargin(currentHostRate)
+  def nextMarginResize(newRate: MilliSatoshi) : Option[HC_CMD_MARGIN] = {
+    if (currentHostRate.toLong > 0) {
+      val newMargin = nextFiatMargin(newRate)
       if (newMargin > reserveSats) {
         val newCapacity = if (newMargin > capacity) {
           nextMarginCapacity(newMargin)
         } else {
           capacity
         }
-        Some(HC_CMD_MARGIN(newCapacity.truncateToSatoshi, newMargin.truncateToSatoshi))
+        Some(HC_CMD_MARGIN(newCapacity.truncateToSatoshi, newRate))
       } else {
         None
       }
@@ -159,7 +159,8 @@ case class HostedCommits(remoteInfo: RemoteNodeInfo, localSpec: CommitmentSpec, 
   def withMargin(margin: MarginChannel): HostedCommits =
     me.modify(_.lastCrossSignedState.initHostedChannel.maxHtlcValueInFlightMsat).setTo(margin.newCapacityMsatU64)
       .modify(_.lastCrossSignedState.initHostedChannel.channelCapacityMsat).setTo(margin.newCapacity.toMilliSatoshi)
-      .modify(_.localSpec.toRemote).using(_ + margin.newCapacity - lastCrossSignedState.initHostedChannel.channelCapacityMsat)
-      .modify(_.localSpec.toLocal).using(_ => margin.newBalance.toMilliSatoshi)
+      .modify(_.localSpec.toRemote).using(_ => margin.newCapacity - margin.newLocalBalance(lastCrossSignedState))
+      .modify(_.localSpec.toLocal).using(_ => margin.newLocalBalance(lastCrossSignedState))
+      .modify(_.lastCrossSignedState.rate).setTo(margin.newRate)
       .modify(_.marginProposal).setTo(None)
 }

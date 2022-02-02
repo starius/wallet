@@ -163,6 +163,13 @@ abstract class ChannelHosted extends Channel { me =>
       val hc1 = hc.copy(currentHostRate = msg.rate)
       STORE(hc1)
       BECOME(hc1, state)
+      hc1.nextMarginResize(hc1.currentHostRate) match {
+        case Some(cmd) => {
+          println(s"Trying to send margin request for capacity=${cmd.newCapacity} and rate=${cmd.newRate} when current balance is ${hc1.reserveSats} and old rate ${hc1.currentRate}")
+          process(cmd)
+        }
+        case None => ()
+      }
       events.notifyResolvers
 
     case (hc: HostedCommits, CMD_HOSTED_QUERY_RATE(), OPEN) =>
@@ -236,7 +243,7 @@ abstract class ChannelHosted extends Channel { me =>
       process(CMD_SIGN)
 
     case (hc: HostedCommits, cmd: HC_CMD_MARGIN, OPEN | SLEEPING) if hc.marginProposal.isEmpty && hc.error.isEmpty =>
-      val margin = MarginChannel(cmd.newCapacity, cmd.newBalance).sign(hc.remoteInfo.nodeSpecificPrivKey)
+      val margin = MarginChannel(cmd.newCapacity, cmd.newRate).sign(hc.remoteInfo.nodeSpecificPrivKey)
       StoreBecomeSend(hc.copy(marginProposal = margin.asSome, resizeProposal = None), state, margin)
       process(CMD_SIGN)
 

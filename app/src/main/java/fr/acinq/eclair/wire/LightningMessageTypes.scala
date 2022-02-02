@@ -279,6 +279,7 @@ case class LastCrossSignedState(isHost: Boolean, refundScriptPubKey: ByteVector,
   def verifyRemoteSig(pubKey: PublicKey): Boolean = Crypto.verifySignature(hostedSigHash, remoteSigOfLocal, pubKey)
 
   def withLocalSigOfRemote(priv: PrivateKey): LastCrossSignedState = {
+    println(s"Signing remote state: ${reverse}")
     val localSignature = Crypto.sign(reverse.hostedSigHash, priv)
     copy(localSigOfRemote = localSignature)
   }
@@ -298,11 +299,12 @@ case class ResizeChannel(newCapacity: Satoshi, clientSig: ByteVector64 = ByteVec
   lazy val newCapacityMsatU64: UInt64 = UInt64(newCapacity.toMilliSatoshi.toLong)
 }
 
-case class MarginChannel(newCapacity: Satoshi, newBalance: Satoshi, clientSig: ByteVector64 = ByteVector64.Zeroes) extends HostedChannelMessage {
-  def isRemoteMargined(remote: LastCrossSignedState): Boolean = newCapacity.toMilliSatoshi == remote.initHostedChannel.channelCapacityMsat && newBalance.toMilliSatoshi == remote.remoteBalanceMsat
-  def sign(priv: PrivateKey): MarginChannel = MarginChannel(clientSig = Crypto.sign(Crypto.sha256(sigMaterial), priv), newCapacity = newCapacity, newBalance = newBalance)
+case class MarginChannel(newCapacity: Satoshi, newRate: MilliSatoshi, clientSig: ByteVector64 = ByteVector64.Zeroes) extends HostedChannelMessage {
+  def isRemoteMargined(remote: LastCrossSignedState): Boolean = newCapacity.toMilliSatoshi == remote.initHostedChannel.channelCapacityMsat && newRate == remote.rate
+  def sign(priv: PrivateKey): MarginChannel = MarginChannel(clientSig = Crypto.sign(Crypto.sha256(sigMaterial), priv), newCapacity = newCapacity, newRate = newRate)
   def verifyClientSig(pubKey: PublicKey): Boolean = Crypto.verifySignature(Crypto.sha256(sigMaterial), clientSig, pubKey)
-  lazy val sigMaterial: ByteVector = Protocol.writeUInt64(newCapacity.toLong, ByteOrder.LITTLE_ENDIAN)
+  def newLocalBalance(state: LastCrossSignedState): MilliSatoshi = MilliSatoshi((newRate.toLong.toDouble * state.localBalanceMsat.toLong.toDouble / state.rate.toLong.toDouble).round)
+  lazy val sigMaterial: ByteVector = Protocol.writeUInt64(newCapacity.toLong, ByteOrder.LITTLE_ENDIAN) ++ Protocol.writeUInt64(newRate.toLong, ByteOrder.LITTLE_ENDIAN)
   lazy val newCapacityMsatU64: UInt64 = UInt64(newCapacity.toMilliSatoshi.toLong)
 }
 
