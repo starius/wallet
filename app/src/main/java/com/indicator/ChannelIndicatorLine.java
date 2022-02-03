@@ -6,7 +6,7 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 import android.widget.LinearLayout;
 import android.util.AttributeSet;
-import com.btcontract.wallettest.R;
+import com.btcontract.wallettestfiat.R;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;

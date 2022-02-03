@@ -7,7 +7,7 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
-import com.btcontract.wallettest.R;
+import com.btcontract.wallettestfiat.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -306,7 +306,7 @@ public class AHBottomNavigationBehavior<V extends View> extends VerticalScrollin
 			}
 		}
 	}
-	
+
 	/**
 	 * Is hidden
 	 * @return

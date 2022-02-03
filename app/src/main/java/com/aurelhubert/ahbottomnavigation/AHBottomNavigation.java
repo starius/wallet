@@ -17,7 +17,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
-import com.btcontract.wallettest.R;
+import com.btcontract.wallettestfiat.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
@@ -195,36 +195,36 @@ public class AHBottomNavigation extends FrameLayout {
 	private void init(Context context, AttributeSet attrs) {
 		this.context = context;
 		resources = this.context.getResources();
-		
+
 		// Item colors
 		titleColorActive = ContextCompat.getColor(context, R.color.colorBottomNavigationAccent);
 		titleColorInactive = ContextCompat.getColor(context, R.color.colorBottomNavigationInactive);
 		itemDisableColor = ContextCompat.getColor(context, R.color.colorBottomNavigationDisable);
-		
+
 		// Colors for colored bottom navigation
 		coloredTitleColorActive = ContextCompat.getColor(context, R.color.colorBottomNavigationActiveColored);
 		coloredTitleColorInactive = ContextCompat.getColor(context, R.color.colorBottomNavigationInactiveColored);
-		
+
 		if (attrs != null) {
 			TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.AHBottomNavigationBehavior_Params, 0, 0);
 			try {
 				selectedBackgroundVisible = ta.getBoolean(R.styleable.AHBottomNavigationBehavior_Params_selectedBackgroundVisible, false);
 				translucentNavigationEnabled = ta.getBoolean(R.styleable.AHBottomNavigationBehavior_Params_translucentNavigationEnabled, false);
-				
+
 				titleColorActive = ta.getColor(R.styleable.AHBottomNavigationBehavior_Params_accentColor,
 						ContextCompat.getColor(context, R.color.colorBottomNavigationAccent));
 				titleColorInactive = ta.getColor(R.styleable.AHBottomNavigationBehavior_Params_inactiveColor,
 						ContextCompat.getColor(context, R.color.colorBottomNavigationInactive));
 				itemDisableColor = ta.getColor(R.styleable.AHBottomNavigationBehavior_Params_disableColor,
 						ContextCompat.getColor(context, R.color.colorBottomNavigationDisable));
-				
+
 				coloredTitleColorActive = ta.getColor(R.styleable.AHBottomNavigationBehavior_Params_coloredActive,
 						ContextCompat.getColor(context, R.color.colorBottomNavigationActiveColored));
 				coloredTitleColorInactive = ta.getColor(R.styleable.AHBottomNavigationBehavior_Params_coloredInactive,
 						ContextCompat.getColor(context, R.color.colorBottomNavigationInactiveColored));
-				
+
 				colored = ta.getBoolean(R.styleable.AHBottomNavigationBehavior_Params_colored, false);
-				
+
 			} finally {
 				ta.recycle();
 			}
@@ -232,7 +232,7 @@ public class AHBottomNavigation extends FrameLayout {
 
 		notificationTextColor = ContextCompat.getColor(context, android.R.color.white);
 		bottomNavigationHeight = (int) resources.getDimension(R.dimen.bottom_navigation_height);
-		
+
 		itemActiveColor = titleColorActive;
 		itemInactiveColor = titleColorInactive;
 
@@ -244,7 +244,7 @@ public class AHBottomNavigation extends FrameLayout {
 		notificationAnimationDuration = 150;
 
 		ViewCompat.setElevation(this, resources.getDimension(R.dimen.bottom_navigation_elevation));
-		
+
 		ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT, bottomNavigationHeight);
 		setLayoutParams(params);
@@ -458,7 +458,7 @@ public class AHBottomNavigation extends FrameLayout {
 					setBackgroundColor(defaultBackgroundColor);
 				}
 			}
-			
+
 			title.setTextSize(TypedValue.COMPLEX_UNIT_PX, current ? activeSize : inactiveSize);
 
 			if (itemsEnabledStates[i]) {
@@ -613,7 +613,7 @@ public class AHBottomNavigation extends FrameLayout {
 				view.setClickable(true);
 				view.setEnabled(false);
 			}
-			
+
 			int width = i == currentItem ? (int) selectedItemWidth :
 					(int) itemWidth;
 
@@ -911,7 +911,7 @@ public class AHBottomNavigation extends FrameLayout {
 			if (i >= notifications.size()) {
 				break;
 			}
-			
+
 			if (itemPosition != UPDATE_ALL_NOTIFICATIONS && itemPosition != i) {
 				continue;
 			}
@@ -973,7 +973,7 @@ public class AHBottomNavigation extends FrameLayout {
 	////////////
 	// PUBLIC //
 	////////////
-	
+
 	/**
 	 * Add an item at the given index
 	 */
@@ -1580,7 +1580,7 @@ public class AHBottomNavigation extends FrameLayout {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Enable the tab item at the given position
 	 * @param position int
@@ -1593,7 +1593,7 @@ public class AHBottomNavigation extends FrameLayout {
 		itemsEnabledStates[position] = true;
 		createItems();
 	}
-	
+
 	/**
 	 * Disable the tab item at the given position
 	 * @param position int
@@ -1606,7 +1606,7 @@ public class AHBottomNavigation extends FrameLayout {
 		itemsEnabledStates[position] = false;
 		createItems();
 	}
-	
+
 	/**
 	 * Set the item disable color
 	 * @param itemDisableColor int
@@ -1614,7 +1614,7 @@ public class AHBottomNavigation extends FrameLayout {
 	public void setItemDisableColor(@ColorInt int itemDisableColor) {
 		this.itemDisableColor = itemDisableColor;
 	}
-	
+
 	////////////////
 	// INTERFACES //
 	////////////////
