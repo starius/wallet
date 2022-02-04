@@ -7,10 +7,10 @@
       android:translateY="341.49176">
     <path
         android:pathData="M0,0h1451.34v1451.34h-1451.34z"
-        android:fillColor="#0098FC"/>
+        android:fillColor="#45af1b"/>
     <path
         android:pathData="M724.32,721.83m-684.84,0a684.84,684.84 0,1 1,1369.68 0a684.84,684.84 0,1 1,-1369.68 0"
-        android:fillColor="#0098FC"/>
+        android:fillColor="#45af1b"/>
     <path
         android:pathData="M678.68,218.74l-21.61,84.17l-136.64,-30.89l-28.2,113.1l4.3,0.91c19.83,4.34 36.49,16.11 47.1,33.19c10.6,17.09 13.77,37.25 8.9,56.77l-97.66,391.67c-9.71,39.02 -48.13,62.87 -87.37,54.23l-13.01,-2.81l-28.57,114.63l141.19,32.02l-21.01,84.13l62.85,17.58L742.7,236.63L678.68,218.74z"
         android:fillColor="#FFFFFF"/>
