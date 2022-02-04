@@ -1,8 +1,8 @@
-package com.btcontract.wallettestfiat
+package com.btcontract.walletfiat
 
 import fr.acinq.eclair._
 import immortan.sqlite._
-import com.btcontract.wallettestfiat.sqlite._
+import com.btcontract.walletfiat.sqlite._
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import fr.acinq.bitcoin.BlockHeader
 import org.junit.runner.RunWith

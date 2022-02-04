@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="lang">rus</string>
-    <string name="app_name">FIAT TESTNET!</string>
+    <string name="app_name">StandardSats SBW</string>
     <string name="sources">Исходный код</string>
     <string name="twitter">Наш твиттер</string>
     <string name="password">Пароль кошелька</string>
@@ -218,7 +218,7 @@
 
     <string name="orbot_err_unclear"><![CDATA[
         Кошелек не может подключиться к Tor через localhost:9050. Запуск остановлен потому что кошелек настроен на работу только через Tor.<br><br>
-        Пожалуйста, убедитесь, что Orbot установлен, VPN режим в нем включен и данное приложение добавлено в список разрешенных. 
+        Пожалуйста, убедитесь, что Orbot установлен, VPN режим в нем включен и данное приложение добавлено в список разрешенных.
     ]]></string>
 
     <string name="orbot_action_open">Закрыть кошелек и открыть Orbot</string>
@@ -418,7 +418,7 @@
 
     <string name="ln_hc_override_warn"><![CDATA[
         <br>Удаленный хост хочет изменить ваш баланс в hosted-канале с текущего <b>%1$s</b> на  новый <b>%2$s</b>,
-        это может произойти только с вашего согласия.<br><br><strong>Убедитесь, что баланс правильный и вы согласны с ним!</strong> 
+        это может произойти только с вашего согласия.<br><br><strong>Убедитесь, что баланс правильный и вы согласны с ним!</strong>
         Согласны ли вы это подписать?
     ]]></string>
 

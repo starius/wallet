@@ -1,4 +1,4 @@
-package com.btcontract.wallettestfiat
+package com.btcontract.walletfiat
 
 import fr.acinq.bitcoin.{ByteVector32, Crypto}
 import androidx.test.ext.junit.runners.AndroidJUnit4

@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        applicationId 'com.btcontract.wallettestfiat'
+        applicationId 'com.btcontract.walletfiat'
         multiDexEnabled true
         targetSdkVersion 30
         minSdkVersion 21
@@ -53,7 +53,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "SBW-${defaultConfig.versionName}.apk"
+            outputFileName = "StandardSats-SBW-${defaultConfig.versionName}.apk"
         }
     }
 

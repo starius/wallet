@@ -1,4 +1,4 @@
-package com.btcontract.wallettestfiat
+package com.btcontract.walletfiat
 
 import fr.acinq.bitcoin.Crypto.{PrivateKey, PublicKey, curve, one}
 import fr.acinq.bitcoin.{Base58, Base58Check, ByteVector64, Crypto}
