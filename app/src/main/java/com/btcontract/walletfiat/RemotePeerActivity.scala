@@ -6,7 +6,6 @@ import android.widget.{LinearLayout, TextView}
 import androidx.appcompat.app.AlertDialog
 import com.btcontract.walletfiat.BaseActivity.StringOps
 import com.btcontract.walletfiat.R.string._
-import com.btcontract.walletfiat.R
 import com.ornach.nobobutton.NoboButton
 import fr.acinq.bitcoin.Crypto.PublicKey
 import fr.acinq.bitcoin._

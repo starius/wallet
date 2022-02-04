@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.btcontract.walletfiat.BaseActivity.StringOps
 import com.btcontract.walletfiat.Colors._
 import com.btcontract.walletfiat.R.string._
-import com.btcontract.walletfiat.R
 import com.btcontract.walletfiat.sheets.HasUrDecoder
 import com.chauthai.swipereveallayout.SwipeRevealLayout
 import com.cottacush.android.currencyedittext.CurrencyEditText

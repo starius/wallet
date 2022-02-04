@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import com.btcontract.walletfiat.BaseActivity.StringOps
 import com.btcontract.walletfiat.R.string._
-import com.btcontract.walletfiat.R
 import fr.acinq.bitcoin.Crypto.PublicKey
 import fr.acinq.bitcoin._
 import fr.acinq.eclair._

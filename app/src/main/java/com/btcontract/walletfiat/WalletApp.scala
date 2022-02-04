@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDex
 import com.btcontract.walletfiat.BaseActivity.StringOps
 import com.btcontract.walletfiat.R.string._
-import com.btcontract.walletfiat.R
 import com.btcontract.walletfiat.sqlite._
 import com.btcontract.walletfiat.utils.{AwaitService, DelayedNotification, LocalBackup}
 import com.softwaremill.quicklens._
@@ -76,7 +75,7 @@ object WalletApp {
   final val OPEN_HC = "openHc1"
 
   def useAuth: Boolean = app.prefs.getBoolean(USE_AUTH, false)
-  def fiatCode: String = app.prefs.getString(FIAT_CODE, "usd")
+  def fiatCode: String = app.prefs.getString(FIAT_CODE, "eur")
   def ensureTor: Boolean = app.prefs.getBoolean(ENSURE_TOR, false)
   def capLNFeeToChain: Boolean = app.prefs.getBoolean(CAP_LN_FEE_TO_CHAIN, false)
   def showRateUs: Boolean = app.prefs.getBoolean(SHOW_RATE_US, true)

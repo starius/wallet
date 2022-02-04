@@ -10,7 +10,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationManagerCompat
 import com.btcontract.walletfiat.BaseActivity.StringOps
 import com.btcontract.walletfiat.R.string._
-import com.btcontract.walletfiat.R
 import com.ornach.nobobutton.NoboButton
 import fr.acinq.bitcoin.Satoshi
 import fr.acinq.eclair.blockchain.EclairWallet._

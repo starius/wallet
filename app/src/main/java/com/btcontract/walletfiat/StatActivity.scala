@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.LinearLayout
 import com.btcontract.walletfiat.Colors.{cardIn, cardOut, cardZero}
 import com.btcontract.walletfiat.R.string._
-import com.btcontract.walletfiat.R
 import fr.acinq.eclair._
 import immortan.LNParams
 

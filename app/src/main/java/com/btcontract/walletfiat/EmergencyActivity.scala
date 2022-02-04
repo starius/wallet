@@ -3,7 +3,6 @@ package com.btcontract.walletfiat
 import android.os.Bundle
 import android.view.View
 import scala.util.Try
-import com.btcontract.walletfiat.R
 
 class EmergencyActivity extends BaseActivity {
   def INIT(state: Bundle): Unit = setContentView(R.layout.activity_emergency)

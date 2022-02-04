@@ -7,7 +7,6 @@ import android.widget.{ArrayAdapter, LinearLayout}
 import immortan.{LNParams, LightningNodeKeys, WalletSecret}
 import androidx.documentfile.provider.DocumentFile
 import com.btcontract.walletfiat.utils.LocalBackup
-import com.btcontract.walletfiat.R
 import androidx.transition.TransitionManager
 import androidx.appcompat.app.AlertDialog
 import com.google.common.io.ByteStreams

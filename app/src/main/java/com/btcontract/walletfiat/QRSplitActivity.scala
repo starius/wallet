@@ -9,7 +9,6 @@ import immortan.crypto.Tools.none
 import immortan.utils.InputParser
 import com.ornach.nobobutton.NoboButton
 import com.btcontract.walletfiat.BaseActivity.StringOps
-import com.btcontract.walletfiat.R
 
 class QRSplitActivity extends QRActivity with ExternalDataChecker with HasTypicalChainFee { me =>
   lazy private[this] val splitQrCaption = findViewById(R.id.splitQrCaption).asInstanceOf[TextView]

@@ -8,7 +8,6 @@ import com.btcontract.walletfiat.BaseActivity.StringOps
 import com.btcontract.walletfiat.BuildConfig.{VERSION_CODE, VERSION_NAME}
 import com.btcontract.walletfiat.Colors._
 import com.btcontract.walletfiat.R.string._
-import com.btcontract.walletfiat.R
 import com.btcontract.walletfiat.sheets.{BaseChoiceBottomSheet, PairingData}
 import com.btcontract.walletfiat.utils.{LocalBackup, OnListItemClickListener}
 import com.google.android.material.snackbar.Snackbar

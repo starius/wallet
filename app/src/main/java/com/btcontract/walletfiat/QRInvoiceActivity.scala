@@ -5,7 +5,6 @@ import android.widget.{ImageButton, ImageView, RelativeLayout, TextView}
 import androidx.transition.TransitionManager
 import com.btcontract.walletfiat.BaseActivity.StringOps
 import com.btcontract.walletfiat.Colors._
-import com.btcontract.walletfiat.R
 import immortan.crypto.Tools._
 import immortan.fsm.IncomingRevealed
 import immortan.utils.{InputParser, PaymentRequestExt}

@@ -9,7 +9,6 @@ import com.azoft.carousellayoutmanager._
 import com.btcontract.walletfiat.BaseActivity.StringOps
 import com.btcontract.walletfiat.Colors._
 import com.btcontract.walletfiat.R.string._
-import com.btcontract.walletfiat.R
 import com.ornach.nobobutton.NoboButton
 import fr.acinq.bitcoin.Btc
 import fr.acinq.eclair._

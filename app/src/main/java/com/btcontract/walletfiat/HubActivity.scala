@@ -16,7 +16,6 @@ import com.btcontract.walletfiat.BaseActivity.StringOps
 import com.btcontract.walletfiat.Colors._
 import com.btcontract.walletfiat.HubActivity._
 import com.btcontract.walletfiat.R.string._
-import com.btcontract.walletfiat.R
 import com.btcontract.walletfiat.utils.LocalBackup
 import com.chauthai.swipereveallayout.{SwipeRevealLayout, ViewBinderHelper}
 import com.github.mmin18.widget.RealtimeBlurView
