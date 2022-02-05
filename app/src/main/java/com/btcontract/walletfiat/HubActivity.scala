@@ -74,7 +74,7 @@ object HubActivity {
 
   def requestHostedChannel: Unit = {
     val localParams = LNParams.makeChannelParams(isFunder = false, LNParams.minChanDustLimit)
-    new HCOpenHandler(LNParams.syncParams.ergveinFiat, randomBytes32, localParams.defaultFinalScriptPubKey, LNParams.cm) {
+    new HCOpenHandler(LNParams.syncParams.ergveinNet, randomBytes32, localParams.defaultFinalScriptPubKey, LNParams.cm) {
       // Stop automatic HC opening attempts on getting any kind of local/remote error, this won't be triggered on disconnect
       def onFailure(reason: Throwable): Unit = WalletApp.app.prefs.edit.putBoolean(WalletApp.OPEN_HC, false).commit
       def onEstablished(cs: Commitments, channel: ChannelHosted): Unit = implant(cs, channel)
