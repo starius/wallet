@@ -1,4 +1,4 @@
-package com.btcontract.walletfiat
+package com.btcontract.wallettestfiat
 
 import org.json4s._
 import org.json4s.JsonDSL._

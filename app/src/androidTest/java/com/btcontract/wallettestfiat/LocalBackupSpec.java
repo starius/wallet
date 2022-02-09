@@ -1,7 +1,7 @@
-package com.btcontract.walletfiat;
+package com.btcontract.wallettestfiat;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import com.btcontract.walletfiat.utils.LocalBackup;
+import com.btcontract.wallettestfiat.utils.LocalBackup;
 import com.google.common.io.Files;
 
 import org.junit.Assert;
