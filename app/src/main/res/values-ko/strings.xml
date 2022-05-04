@@ -260,6 +260,7 @@
     <string name="settings_auth_not_available">Authentication support is blocked at the moment, try again later</string>
     <string name="settings_auth_error"><![CDATA[<b>Authentication error</b><br><br><b>Details</b>: %1$s<br><br><b>Code</b>: %2$s]]></string>
     <string name="settings_auth_title">Wallet authentication</string>
+    <string name="settings_auth_negative">Cancel</string>
 
     <string name="settings_ensure_tor">Enforce Tor connection</string>
     <string name="settings_ensure_tor_enabled">App does not start unless Orbot VPN is running and halts if Orbot stops running</string>

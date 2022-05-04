@@ -30,6 +30,7 @@ abstract class BiometricAuth(view: View, host: BaseActivity) {
     val promptInfo: BiometricPrompt.PromptInfo =
       (new BiometricPrompt.PromptInfo.Builder)
         .setTitle(host getString R.string.settings_auth_title)
+        .setNegativeButtonText(host getString R.string.settings_auth_negative)
         .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK)
         .build
 
