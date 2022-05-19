@@ -101,34 +101,7 @@ class SetupActivity extends BaseActivity { me =>
     restoreOptions.setVisibility(View.VISIBLE)
   }
 
-
-  def useBackupFile(view: View): Unit = registerForActivityResult(new ActivityResultContracts.StartActivityForResult, new ActivityResultCallback[ActivityResult] {
-    def onActivityResult(result: ActivityResult): Unit = {
-      val resultData = result.getData()
-      val resultCode = result.getResultCode()
-      if (resultCode == Activity.RESULT_OK && resultData != null) {
-        val cipherBytes = ByteStreams.toByteArray(getContentResolver openInputStream resultData.getData)
-
-        showMnemonicPopup(R.string.action_backup_present_title) { mnemonics =>
-          val walletSeed = MnemonicCode.toSeed(mnemonics, passphrase = new String)
-          LocalBackup.decryptBackup(ByteVector.view(cipherBytes), walletSeed) match {
-
-            case Success(plainEssentialBytes) =>
-              // We were able to decrypt a file, implant it into db location and proceed
-              LocalBackup.copyPlainDataToDbLocation(me, WalletApp.dbFileNameEssential, plainEssentialBytes)
-              // Delete user-selected backup file while we can here and make an app-owned backup shortly
-              DocumentFile.fromSingleUri(me, resultData.getData).delete
-              WalletApp.backupSaveWorker.replaceWork(true)
-              proceedWithMnemonics(mnemonics)
-
-            case Failure(exception) =>
-              val msg = getString(R.string.error_could_not_decrypt)
-              onFail(msg format exception.getMessage)
-          }
-        }
-      }
-    }
-  } )
+  def useBackupFile(view: View): Unit = startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT).setType("*/*"), FILE_REQUEST_CODE)
 
   def useRecoveryPhrase(view: View): Unit = showMnemonicPopup(R.string.action_recovery_phrase_title)(proceedWithMnemonics)
 
