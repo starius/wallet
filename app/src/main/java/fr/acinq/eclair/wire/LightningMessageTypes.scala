@@ -241,7 +241,7 @@ trait HostedChannelMessage extends LightningMessage
 case class InvokeHostedChannel(chainHash: ByteVector32, refundScriptPubKey: ByteVector, secret: ByteVector = ByteVector.empty) extends HostedChannelMessage
 
 case class InitHostedChannel(maxHtlcValueInFlightMsat: UInt64, htlcMinimumMsat: MilliSatoshi, maxAcceptedHtlcs: Int, channelCapacityMsat: MilliSatoshi,
-                             initialClientBalanceMsat: MilliSatoshi, initialRate: MilliSatoshi, features: List[Int] = Nil) extends HostedChannelMessage
+                             initialClientBalanceMsat: MilliSatoshi, initialRate: MilliSatoshi, ticker: Option[String], features: List[Int] = Nil) extends HostedChannelMessage
 
 case class HostedChannelBranding(rgbColor: Color, pngIcon: Option[ByteVector], contactInfo: String) extends HostedChannelMessage
 

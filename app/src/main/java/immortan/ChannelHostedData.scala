@@ -33,7 +33,7 @@ case class HostedCommits(remoteInfo: RemoteNodeInfo, localSpec: CommitmentSpec, 
 
   lazy val nextLocalSpec: CommitmentSpec = CommitmentSpec.reduce(localSpec, nextLocalUpdates, nextRemoteUpdates)
 
-  lazy val channelId: ByteVector32 = hostedChanId(remoteInfo.nodeSpecificPubKey.value, remoteInfo.nodeId.value)
+  lazy val channelId: ByteVector32 = hostedChanId(remoteInfo.nodeSpecificPubKey.value, remoteInfo.nodeId.value, lastCrossSignedState.initHostedChannel.ticker)
 
   lazy val allOutgoing: Set[UpdateAddHtlc] = {
     val allOutgoingAdds = localSpec.outgoingAdds ++ nextLocalSpec.outgoingAdds

@@ -2,7 +2,6 @@ package com.btcontract.wallettestfiat
 
 import java.net.InetSocketAddress
 import java.util.TimerTask
-
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.graphics.{Bitmap, BitmapFactory}
@@ -34,6 +33,7 @@ import fr.acinq.eclair.blockchain.fee.FeeratePerByte
 import fr.acinq.eclair.channel._
 import fr.acinq.eclair.router.Router
 import fr.acinq.eclair.transactions.{LocalFulfill, RemoteFulfill, Scripts}
+import fr.acinq.eclair.wire.LightningMessageCodecs.USD_TICKER
 import fr.acinq.eclair.wire.{FullPaymentTag, NodeAnnouncement, PaymentTagTlv, UnknownNextPeer}
 import immortan.ChannelListener.Malfunction
 import immortan.ChannelMaster.{OutgoingAdds, RevealedLocalFulfills}
@@ -72,9 +72,9 @@ object HubActivity {
   var allInfos: Seq[TransactionDetails] = Nil
   var instance: HubActivity = _
 
-  def requestHostedChannel: Unit = {
+  def requestHostedChannel(ticker: Option[String]): Unit = {
     val localParams = LNParams.makeChannelParams(isFunder = false, LNParams.minChanDustLimit)
-    new HCOpenHandler(LNParams.syncParams.localNode, randomBytes32, localParams.defaultFinalScriptPubKey, LNParams.cm) {
+    new HCOpenHandler(LNParams.syncParams.localNode, randomBytes32, localParams.defaultFinalScriptPubKey, ticker, LNParams.cm) {
       // Stop automatic HC opening attempts on getting any kind of local/remote error, this won't be triggered on disconnect
       def onFailure(reason: Throwable): Unit = WalletApp.app.prefs.edit.putBoolean(WalletApp.OPEN_HC, false).commit
       def onEstablished(cs: Commitments, channel: ChannelHosted): Unit = implant(cs, channel)
@@ -948,7 +948,7 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
   private val chainListener = new WalletEventsListener {
     override def onChainTipKnown(currentBlockCount: CurrentBlockCount): Unit = {
       val openHc = WalletApp.openHc && LNParams.isMainnet && LNParams.cm.allHostedCommits.isEmpty
-      if (openHc) HubActivity.requestHostedChannel
+      if (openHc) HubActivity.requestHostedChannel(Some(USD_TICKER))
     }
 
     override def onChainMasterSelected(event: InetSocketAddress): Unit = UITask {

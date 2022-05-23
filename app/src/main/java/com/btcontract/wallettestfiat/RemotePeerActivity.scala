@@ -53,7 +53,8 @@ class RemotePeerActivity extends ChanErrorHandlerActivity with ExternalDataCheck
   private[this] lazy val featuresList = findViewById(R.id.featuresList).asInstanceOf[FlowLayout]
   private[this] lazy val viewNoFeatureSupport = findViewById(R.id.viewNoFeatureSupport).asInstanceOf[TextView]
   private[this] lazy val viewYesFeatureSupport = findViewById(R.id.viewYesFeatureSupport).asInstanceOf[LinearLayout]
-  private[this] lazy val optionHostedChannel = findViewById(R.id.optionHostedChannel).asInstanceOf[NoboButton]
+  private[this] lazy val optionHostedChannelUsd = findViewById(R.id.optionHostedChannelUsd).asInstanceOf[NoboButton]
+  private[this] lazy val optionHostedChannelEur = findViewById(R.id.optionHostedChannelEur).asInstanceOf[NoboButton]
 
   private[this] lazy val criticalFeatures = Set(BasicMultiPartPayment, OptionDataLossProtect, StaticRemoteKey)
 
@@ -111,13 +112,14 @@ class RemotePeerActivity extends ChanErrorHandlerActivity with ExternalDataCheck
 
       hasInfo match {
         case nc: NormalChannelRequest if criticalSupportAvailable => nc.requestChannel.foreach(none, revertAndInform)
-        case hc: HostedChannelRequest if criticalSupportAvailable && theirInitSupports(HostedChannels) => askHostedChannel(hc.secret)
+        case hc: HostedChannelRequest if criticalSupportAvailable && theirInitSupports(HostedChannels) => askHostedChannel(hc.secret, hc.ticker)
         case _: HasRemoteInfoWrap => setVis(isVisible = criticalSupportAvailable, viewYesFeatureSupport)
         case _ => whenBackPressed.run
       }
 
       setVis(isVisible = !criticalSupportAvailable, viewNoFeatureSupport)
-      setVis(isVisible = theirInitSupports(HostedChannels), optionHostedChannel)
+      setVis(isVisible = theirInitSupports(HostedChannels), optionHostedChannelUsd)
+      setVis(isVisible = theirInitSupports(HostedChannels), optionHostedChannelEur)
       setVis(isVisible = true, featuresList)
     }.run
   }
@@ -274,10 +276,16 @@ class RemotePeerActivity extends ChanErrorHandlerActivity with ExternalDataCheck
 
   def sharePeerSpecificNodeId(view: View): Unit = share(hasInfo.remoteInfo.nodeSpecificPubKey.toString)
 
-  def requestHostedChannel(view: View): Unit = askHostedChannel(randomBytes32)
+  def requestHostedChannelUsd(view: View): Unit = askHostedChannel(randomBytes32, Some("USD"))
+  def requestHostedChannelEur(view: View): Unit = askHostedChannel(randomBytes32, None)
 
-  def askHostedChannel(secret: ByteVector32): Unit = {
-    val builder = new AlertDialog.Builder(me).setTitle(rpa_request_hc).setMessage(getString(rpa_hc_warn).html)
+  def askHostedChannel(secret: ByteVector32, ticker: Option[String]): Unit = {
+    val title = ticker match {
+      case Some("USD") => rpa_request_hc_usd
+      case Some("EUR") => rpa_request_hc_eur
+      case _ => rpa_request_hc_eur
+    }
+    val builder = new AlertDialog.Builder(me).setTitle(title).setMessage(getString(rpa_hc_warn).html)
     mkCheckForm(doAskHostedChannel, none, builder, dialog_ok, dialog_cancel)
 
     def doAskHostedChannel(alert: AlertDialog): Unit = {
@@ -288,7 +296,7 @@ class RemotePeerActivity extends ChanErrorHandlerActivity with ExternalDataCheck
 
       // We only need local params to extract defaultFinalScriptPubKey
       val params = LNParams.makeChannelParams(isFunder = false, LNParams.minChanDustLimit)
-      new HCOpenHandler(hasInfo.remoteInfo, secret, params.defaultFinalScriptPubKey, LNParams.cm) {
+      new HCOpenHandler(hasInfo.remoteInfo, secret, params.defaultFinalScriptPubKey, ticker, LNParams.cm) {
         def onEstablished(cs: Commitments, channel: ChannelHosted): Unit = implant(cs, channel)
 
         def onFailure(reason: Throwable): Unit = UITask {

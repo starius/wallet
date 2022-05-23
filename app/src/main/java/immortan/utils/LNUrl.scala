@@ -115,7 +115,7 @@ case class NormalChannelRequest(uri: String, callback: String, k1: String) exten
   val remoteInfo: RemoteNodeInfo = RemoteNodeInfo(pubKey, address, hostAddress)
 }
 
-case class HostedChannelRequest(uri: String, alias: Option[String], k1: String) extends LNUrlData with HasRemoteInfo {
+case class HostedChannelRequest(uri: String, alias: Option[String], k1: String, ticker: Option[String]) extends LNUrlData with HasRemoteInfo {
 
   val secret: ByteVector32 = ByteVector32.fromValidHex(k1)
 

@@ -78,10 +78,17 @@
                 style="@style/GrayButton"/>
 
             <com.ornach.nobobutton.NoboButton
-                app:nb_text="@string/rpa_request_hc"
-                android:id="@+id/optionHostedChannel"
+                app:nb_text="@string/rpa_request_hc_usd"
+                android:id="@+id/optionHostedChannelUsd"
                 android:layout_marginTop="@dimen/large_button_margin"
-                android:onClick="requestHostedChannel"
+                android:onClick="requestHostedChannelUsd"
+                style="@style/GrayButton"/>
+
+            <com.ornach.nobobutton.NoboButton
+                app:nb_text="@string/rpa_request_hc_eur"
+                android:id="@+id/optionHostedChannelEur"
+                android:layout_marginTop="@dimen/large_button_margin"
+                android:onClick="requestHostedChannelEur"
                 style="@style/GrayButton"/>
 
         </LinearLayout>

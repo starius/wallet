@@ -21,6 +21,7 @@ import fr.acinq.bitcoin._
 import fr.acinq.eclair._
 import fr.acinq.eclair.channel._
 import fr.acinq.eclair.wire.HostedChannelBranding
+import fr.acinq.eclair.wire.LightningMessageCodecs.USD_TICKER
 import immortan.ChannelListener.Malfunction
 import immortan._
 import immortan.crypto.Tools._
@@ -410,7 +411,7 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
       addFlowChip(footer.flow, getString(chan_open_scan), R.drawable.border_blue, _ => scanNodeQr)
       if (LNParams.isMainnet) addFlowChip(footer.flow, getString(chan_open_lnbig), R.drawable.border_blue, _ => me browse "https://lnbig.com/#/open-channel")
       if (LNParams.isMainnet) addFlowChip(footer.flow, getString(chan_open_bitrefill), R.drawable.border_blue, _ => me browse "https://www.bitrefill.com/buy/lightning-channel")
-      if (LNParams.isMainnet && LNParams.cm.allHostedCommits.isEmpty) addFlowChip(footer.flow, getString(rpa_request_hc), R.drawable.border_yellow, _ => requestHostedChannel)
+      if (LNParams.isMainnet && LNParams.cm.allHostedCommits.isEmpty) addFlowChip(footer.flow, getString(rpa_request_hc_usd), R.drawable.border_yellow, _ => requestHostedChannel)
       chanList.addFooterView(footer.view)
       chanList.setAdapter(chanAdapter)
       chanList.setDividerHeight(0)
@@ -427,7 +428,7 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
   }
 
   private def requestHostedChannel: Unit = {
-    HubActivity.requestHostedChannel
+    HubActivity.requestHostedChannel(Some(USD_TICKER))
     finish
   }
 

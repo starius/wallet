@@ -279,6 +279,7 @@ object LightningMessageCodecs {
       (millisatoshi withContext "channelCapacityMsat") ::
       (millisatoshi withContext "initialClientBalanceMsat") ::
       (millisatoshi withContext "initialRate") ::
+      (optional(bool8, variableSizeBytes(uint16, utf8)) withContext "ticker") ::
       (listOfN(uint16, uint16) withContext "features")
   }.as[InitHostedChannel]
 
@@ -400,6 +401,16 @@ object LightningMessageCodecs {
   final val HC_REPLY_RATE_TAG = 52511
 
   final val HC_MARGIN_CHANNEL_TAG = 53495
+
+  // Tickers
+
+  final val USD_TICKER = "USD"
+  final val EUR_TICKER = "EUR"
+
+  final val knownTickers: Set[String] = Set(
+    USD_TICKER,
+    EUR_TICKER
+  )
 
   // SWAP-IN
 

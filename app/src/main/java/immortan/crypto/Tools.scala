@@ -3,6 +3,7 @@ package immortan.crypto
 import java.io.ByteArrayInputStream
 import java.nio.ByteOrder
 import java.util.concurrent.TimeUnit
+import java.nio.charset.StandardCharsets
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import com.sparrowwallet.hummingbird.UR
@@ -94,9 +95,13 @@ object Tools {
     if (pubkey1First) pubkey1 ++ pubkey2 else pubkey2 ++ pubkey1
   }
 
-  def hostedChanId(pubkey1: ByteVector, pubkey2: ByteVector): ByteVector32 = {
+  def hostedChanId(pubkey1: ByteVector, pubkey2: ByteVector, ticker: Option[String]): ByteVector32 = {
     val nodesCombined = hostedNodesCombined(pubkey1, pubkey2)
-    Crypto.sha256(nodesCombined)
+    val tickerBytes = ticker.map(_.getBytes(StandardCharsets.UTF_8))
+    tickerBytes match {
+      case Some(tbs) => Crypto.sha256(nodesCombined ++ ByteVector(tbs))
+      case _ =>  Crypto.sha256(nodesCombined)
+    }
   }
 
   def hostedShortChanId(pubkey1: ByteVector, pubkey2: ByteVector): Long = {
