@@ -202,8 +202,9 @@ class SyncParams {
   val lightning: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"03baa70886d9200af0ffbd3f9e18d96008331c858456b16e3a9b41e735c6208fef"), NodeAddress.unresolved(9735, host = 45, 20, 67, 1), "LIGHTNING")
   val acinq: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"03864ef025fde8fb587d989186ce6a4a186895ee44a926bfc370e2c366597a3f8f"), NodeAddress.unresolved(9735, host = 34, 239, 230, 56), "ACINQ")
   val ergveinFiat: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"02355413da0019c7bd5e37e0ff29deca43dd8300f71af09c378a5e3dd768c238f1"), NodeAddress.unresolved(9936, host = 188, 244, 4, 78), "ergvein-fiatchannels")
+  val localNode: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"035912832c3eea544dc1c1bd4569f3f1f4ef58887c4df88fa17a899c84f093e3e6"), NodeAddress.unresolved(9735, host = 10, 0, 2, 2), "localnode")
 
-  val syncNodes: Set[RemoteNodeInfo] = Set(satm, motherbase, bCashIsTrash, ergveinNet, conductor, silentBob, lightning, acinq)
+  val syncNodes: Set[RemoteNodeInfo] = Set(satm, motherbase, bCashIsTrash, ergveinNet, localNode, conductor, silentBob, lightning, acinq)
   val phcSyncNodes: Set[RemoteNodeInfo] = Set(satm, motherbase, lntxbot1)
 
   val maxPHCCapacity: MilliSatoshi = MilliSatoshi(100000000000000L) // PHC can not be larger than 1000 BTC
