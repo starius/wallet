@@ -104,8 +104,10 @@ object Tools {
     }
   }
 
-  def hostedShortChanId(pubkey1: ByteVector, pubkey2: ByteVector): Long = {
-    val stream = new ByteArrayInputStream(hostedNodesCombined(pubkey1, pubkey2).toArray)
+  def hostedShortChanId(pubkey1: ByteVector, pubkey2: ByteVector, ticker: Option[String]): Long = {
+    val tickerBytes = ticker.getOrElse("").getBytes(StandardCharsets.UTF_8)
+    val hash = hostedNodesCombined(pubkey1, pubkey2) ++ ByteVector(tickerBytes)
+    val stream = new ByteArrayInputStream(hash.toArray)
     def getChunk: Long = Protocol.uint64(stream, ByteOrder.BIG_ENDIAN)
     List.fill(8)(getChunk).sum
   }

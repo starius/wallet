@@ -5,6 +5,7 @@ import fr.acinq.bitcoin.Crypto.PublicKey
 import fr.acinq.eclair.Features.ChannelRangeQueriesExtended
 import fr.acinq.eclair.router.Router.Data
 import fr.acinq.eclair.router.{Announcements, Sync}
+import fr.acinq.eclair.wire.LightningMessageCodecs.USD_TICKER
 import fr.acinq.eclair.wire.QueryShortChannelIdsTlv.QueryFlagType._
 import fr.acinq.eclair.wire._
 import immortan.SyncMaster._
@@ -79,7 +80,7 @@ case class SyncWorkerPHCData(phcMaster: PHCSyncMaster,
   def isAcceptable(ann: ChannelAnnouncement): Boolean = {
     val notTooMuchNode1PHCs = nodeIdToShortIds.getOrElse(ann.nodeId1, Set.empty).size < LNParams.syncParams.maxPHCPerNode
     val notTooMuchNode2PHCs = nodeIdToShortIds.getOrElse(ann.nodeId2, Set.empty).size < LNParams.syncParams.maxPHCPerNode
-    val isCorrect = Tools.hostedShortChanId(ann.nodeId1.value, ann.nodeId2.value) == ann.shortChannelId
+    val isCorrect = Tools.hostedShortChanId(ann.nodeId1.value, ann.nodeId2.value, Some(USD_TICKER)) == ann.shortChannelId // TODO: announce tickers
     ann.isPHC && isCorrect && notTooMuchNode1PHCs && notTooMuchNode2PHCs
   }
 

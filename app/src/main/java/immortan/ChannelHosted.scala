@@ -232,7 +232,7 @@ abstract class ChannelHosted extends Channel { me =>
 
 
     case (hc: HostedCommits, update: ChannelUpdate, OPEN | SLEEPING) if hc.updateOpt.forall(_.core != update.core) && hc.error.isEmpty =>
-      val shortIdMatches = hostedShortChanId(hc.remoteInfo.nodeSpecificPubKey.value, hc.remoteInfo.nodeId.value) == update.shortChannelId
+      val shortIdMatches = hostedShortChanId(hc.remoteInfo.nodeSpecificPubKey.value, hc.remoteInfo.nodeId.value, hc.lastCrossSignedState.initHostedChannel.ticker) == update.shortChannelId
       if (shortIdMatches) StoreBecomeSend(hc.copy(updateOpt = update.asSome), state)
 
 
