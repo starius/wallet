@@ -37,11 +37,11 @@ abstract class ChannelHosted extends Channel { me =>
 
   def doProcess(change: Any): Unit = Tuple3(data, change, state) match {
     case (wait: WaitRemoteHostedReply, CMD_SOCKET_ONLINE, WAIT_FOR_INIT) =>
-      me SEND InvokeHostedChannel(LNParams.chainHash, wait.refundScriptPubKey, wait.secret)
+      me SEND InvokeHostedChannel(LNParams.chainHash, wait.refundScriptPubKey, wait.secret, wait.ticker)
       BECOME(wait, WAIT_FOR_ACCEPT)
 
 
-    case (WaitRemoteHostedReply(remoteInfo, refundScriptPubKey, _), init: InitHostedChannel, WAIT_FOR_ACCEPT) =>
+    case (WaitRemoteHostedReply(remoteInfo, refundScriptPubKey, _, _), init: InitHostedChannel, WAIT_FOR_ACCEPT) =>
       if (init.initialClientBalanceMsat > init.channelCapacityMsat) throw new RuntimeException(s"Their init balance for us=${init.initialClientBalanceMsat}, is larger than capacity")
       if (UInt64(100000000L) > init.maxHtlcValueInFlightMsat) throw new RuntimeException(s"Their max value in-flight=${init.maxHtlcValueInFlightMsat}, is too low")
       if (init.htlcMinimumMsat > 546000L.msat) throw new RuntimeException(s"Their minimal payment size=${init.htlcMinimumMsat}, is too high")
@@ -215,7 +215,8 @@ abstract class ChannelHosted extends Channel { me =>
 
     case (hc: HostedCommits, CMD_SOCKET_ONLINE, SLEEPING) =>
       val origRefundPubKey = hc.lastCrossSignedState.refundScriptPubKey
-      val invokeMsg = InvokeHostedChannel(LNParams.chainHash, origRefundPubKey, ByteVector.empty)
+      val ticker = hc.lastCrossSignedState.initHostedChannel.ticker
+      val invokeMsg = InvokeHostedChannel(LNParams.chainHash, origRefundPubKey, ByteVector.empty, ticker)
       SEND(hc.error getOrElse invokeMsg)
 
 

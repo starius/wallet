@@ -238,7 +238,7 @@ case class UnknownMessage(tag: Int, data: ByteVector) extends LightningMessage
 
 trait HostedChannelMessage extends LightningMessage
 
-case class InvokeHostedChannel(chainHash: ByteVector32, refundScriptPubKey: ByteVector, secret: ByteVector = ByteVector.empty) extends HostedChannelMessage
+case class InvokeHostedChannel(chainHash: ByteVector32, refundScriptPubKey: ByteVector, secret: ByteVector = ByteVector.empty, ticker: Option[String]) extends HostedChannelMessage
 
 case class InitHostedChannel(maxHtlcValueInFlightMsat: UInt64, htlcMinimumMsat: MilliSatoshi, maxAcceptedHtlcs: Int, channelCapacityMsat: MilliSatoshi,
                              initialClientBalanceMsat: MilliSatoshi, initialRate: MilliSatoshi, ticker: Option[String], features: List[Int] = Nil) extends HostedChannelMessage

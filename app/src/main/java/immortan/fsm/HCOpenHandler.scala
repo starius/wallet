@@ -49,7 +49,7 @@ abstract class HCOpenHandler(info: RemoteNodeInfo, peerSpecificSecret: ByteVecto
 
   if (cm.hostedFromNode(info.nodeId).isEmpty) {
     freshChannel.listeners = Set(makeChanListener)
-    freshChannel doProcess WaitRemoteHostedReply(info.safeAlias, peerSpecificRefundPubKey, peerSpecificSecret)
+    freshChannel doProcess WaitRemoteHostedReply(info.safeAlias, peerSpecificRefundPubKey, peerSpecificSecret, ticker)
     CommsTower.listenNative(listeners1 = Set(makeChanListener), remoteInfo = info)
   } else {
     // Only one HC per remote peer is allowed, make sure this condition holds
