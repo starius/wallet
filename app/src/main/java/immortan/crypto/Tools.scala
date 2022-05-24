@@ -95,17 +95,14 @@ object Tools {
     if (pubkey1First) pubkey1 ++ pubkey2 else pubkey2 ++ pubkey1
   }
 
-  def hostedChanId(pubkey1: ByteVector, pubkey2: ByteVector, ticker: Option[String]): ByteVector32 = {
+  def hostedChanId(pubkey1: ByteVector, pubkey2: ByteVector, ticker: String): ByteVector32 = {
     val nodesCombined = hostedNodesCombined(pubkey1, pubkey2)
-    val tickerBytes = ticker.map(_.getBytes(StandardCharsets.UTF_8))
-    tickerBytes match {
-      case Some(tbs) => Crypto.sha256(nodesCombined ++ ByteVector(tbs))
-      case _ =>  Crypto.sha256(nodesCombined)
-    }
+    val tickerBytes = ticker.getBytes(StandardCharsets.UTF_8)
+    Crypto.sha256(nodesCombined ++ ByteVector(tickerBytes))
   }
 
-  def hostedShortChanId(pubkey1: ByteVector, pubkey2: ByteVector, ticker: Option[String]): Long = {
-    val tickerBytes = ticker.getOrElse("").getBytes(StandardCharsets.UTF_8)
+  def hostedShortChanId(pubkey1: ByteVector, pubkey2: ByteVector, ticker: String): Long = {
+    val tickerBytes = ticker.getBytes(StandardCharsets.UTF_8)
     val hash = hostedNodesCombined(pubkey1, pubkey2) ++ ByteVector(tickerBytes)
     val stream = new ByteArrayInputStream(hash.toArray)
     def getChunk: Long = Protocol.uint64(stream, ByteOrder.BIG_ENDIAN)

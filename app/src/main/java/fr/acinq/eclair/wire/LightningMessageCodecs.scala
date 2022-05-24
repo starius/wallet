@@ -270,7 +270,7 @@ object LightningMessageCodecs {
     (bytes32 withContext "chainHash") ::
       (varsizebinarydata withContext "refundScriptPubKey") ::
       (varsizebinarydata withContext "secret") ::
-      (optional(bool8, variableSizeBytes(uint16, utf8)) withContext "ticker")
+      (variableSizeBytes(uint16, utf8) withContext "ticker")
   }.as[InvokeHostedChannel]
 
   lazy val initHostedChannelCodec = {
@@ -280,7 +280,7 @@ object LightningMessageCodecs {
       (millisatoshi withContext "channelCapacityMsat") ::
       (millisatoshi withContext "initialClientBalanceMsat") ::
       (millisatoshi withContext "initialRate") ::
-      (optional(bool8, variableSizeBytes(uint16, utf8)) withContext "ticker") ::
+      (variableSizeBytes(uint16, utf8) withContext "ticker") ::
       (listOfN(uint16, uint16) withContext "features")
   }.as[InitHostedChannel]
 

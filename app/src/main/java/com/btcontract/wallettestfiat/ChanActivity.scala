@@ -428,7 +428,7 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
   }
 
   private def requestHostedChannel: Unit = {
-    HubActivity.requestHostedChannel(Some(USD_TICKER))
+    HubActivity.requestHostedChannel(USD_TICKER)
     finish
   }
 

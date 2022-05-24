@@ -72,7 +72,7 @@ object HubActivity {
   var allInfos: Seq[TransactionDetails] = Nil
   var instance: HubActivity = _
 
-  def requestHostedChannel(ticker: Option[String]): Unit = {
+  def requestHostedChannel(ticker: String): Unit = {
     val localParams = LNParams.makeChannelParams(isFunder = false, LNParams.minChanDustLimit)
     new HCOpenHandler(LNParams.syncParams.localNode, randomBytes32, localParams.defaultFinalScriptPubKey, ticker, LNParams.cm) {
       // Stop automatic HC opening attempts on getting any kind of local/remote error, this won't be triggered on disconnect
@@ -948,7 +948,7 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
   private val chainListener = new WalletEventsListener {
     override def onChainTipKnown(currentBlockCount: CurrentBlockCount): Unit = {
       val openHc = WalletApp.openHc && LNParams.isMainnet && LNParams.cm.allHostedCommits.isEmpty
-      if (openHc) HubActivity.requestHostedChannel(Some(USD_TICKER))
+      if (openHc) HubActivity.requestHostedChannel(USD_TICKER)
     }
 
     override def onChainMasterSelected(event: InetSocketAddress): Unit = UITask {

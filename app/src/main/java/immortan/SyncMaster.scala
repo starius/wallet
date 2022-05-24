@@ -80,7 +80,7 @@ case class SyncWorkerPHCData(phcMaster: PHCSyncMaster,
   def isAcceptable(ann: ChannelAnnouncement): Boolean = {
     val notTooMuchNode1PHCs = nodeIdToShortIds.getOrElse(ann.nodeId1, Set.empty).size < LNParams.syncParams.maxPHCPerNode
     val notTooMuchNode2PHCs = nodeIdToShortIds.getOrElse(ann.nodeId2, Set.empty).size < LNParams.syncParams.maxPHCPerNode
-    val isCorrect = Tools.hostedShortChanId(ann.nodeId1.value, ann.nodeId2.value, Some(USD_TICKER)) == ann.shortChannelId // TODO: announce tickers
+    val isCorrect = Tools.hostedShortChanId(ann.nodeId1.value, ann.nodeId2.value, USD_TICKER) == ann.shortChannelId // TODO: announce tickers
     ann.isPHC && isCorrect && notTooMuchNode1PHCs && notTooMuchNode2PHCs
   }
 

@@ -16,6 +16,7 @@ import fr.acinq.eclair.blockchain.electrum.ElectrumWallet.GenerateTxResponse
 import fr.acinq.eclair.blockchain.fee.{FeeratePerByte, FeeratePerKw}
 import fr.acinq.eclair.channel.{Commitments, DATA_WAIT_FOR_FUNDING_CONFIRMED, DATA_WAIT_FOR_FUNDING_INTERNAL}
 import fr.acinq.eclair.transactions.Scripts
+import fr.acinq.eclair.wire.LightningMessageCodecs.{EUR_TICKER, USD_TICKER}
 import fr.acinq.eclair.wire._
 import immortan._
 import immortan.crypto.Tools._
@@ -276,13 +277,13 @@ class RemotePeerActivity extends ChanErrorHandlerActivity with ExternalDataCheck
 
   def sharePeerSpecificNodeId(view: View): Unit = share(hasInfo.remoteInfo.nodeSpecificPubKey.toString)
 
-  def requestHostedChannelUsd(view: View): Unit = askHostedChannel(randomBytes32, Some("USD"))
-  def requestHostedChannelEur(view: View): Unit = askHostedChannel(randomBytes32, None)
+  def requestHostedChannelUsd(view: View): Unit = askHostedChannel(randomBytes32, USD_TICKER)
+  def requestHostedChannelEur(view: View): Unit = askHostedChannel(randomBytes32, EUR_TICKER)
 
-  def askHostedChannel(secret: ByteVector32, ticker: Option[String]): Unit = {
+  def askHostedChannel(secret: ByteVector32, ticker: String): Unit = {
     val title = ticker match {
-      case Some("USD") => rpa_request_hc_usd
-      case Some("EUR") => rpa_request_hc_eur
+      case "USD" => rpa_request_hc_usd
+      case "EUR" => rpa_request_hc_eur
       case _ => rpa_request_hc_eur
     }
     val builder = new AlertDialog.Builder(me).setTitle(title).setMessage(getString(rpa_hc_warn).html)

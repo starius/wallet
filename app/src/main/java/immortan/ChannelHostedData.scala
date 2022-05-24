@@ -11,7 +11,7 @@ import immortan.utils.Rational
 import scodec.bits.ByteVector
 
 
-case class WaitRemoteHostedReply(remoteInfo: RemoteNodeInfo, refundScriptPubKey: ByteVector, secret: ByteVector, ticker: Option[String]) extends ChannelData
+case class WaitRemoteHostedReply(remoteInfo: RemoteNodeInfo, refundScriptPubKey: ByteVector, secret: ByteVector, ticker: String) extends ChannelData
 
 case class WaitRemoteHostedStateUpdate(remoteInfo: RemoteNodeInfo, hc: HostedCommits) extends ChannelData
 
