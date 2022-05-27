@@ -10,7 +10,7 @@ import immortan._
 import scodec.bits.ByteVector
 
 
-abstract class HCOpenHandler(info: RemoteNodeInfo, peerSpecificSecret: ByteVector32, peerSpecificRefundPubKey: ByteVector, ticker: String, cm: ChannelMaster) {
+abstract class HCOpenHandler(info: RemoteNodeInfo, peerSpecificSecret: ByteVector32, peerSpecificRefundPubKey: ByteVector, ticker: Ticker, cm: ChannelMaster) {
   val channelId: ByteVector32 = Tools.hostedChanId(info.nodeSpecificPubKey.value, info.nodeId.value, ticker)
 
   private val freshChannel = new ChannelHosted {

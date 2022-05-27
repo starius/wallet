@@ -21,8 +21,8 @@ import fr.acinq.bitcoin._
 import fr.acinq.eclair._
 import fr.acinq.eclair.channel._
 import fr.acinq.eclair.wire.HostedChannelBranding
-import fr.acinq.eclair.wire.LightningMessageCodecs.USD_TICKER
 import immortan.ChannelListener.Malfunction
+import immortan.Ticker.USD_TICKER
 import immortan._
 import immortan.crypto.Tools._
 import immortan.utils.{BitcoinUri, Denomination, InputParser, PaymentRequestExt, Rx}
@@ -220,6 +220,7 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
 
       def toHumanRate(x: MilliSatoshi): Double = 100000000000.0 / x.toLong.toDouble
 
+      val ticker = hc.lastCrossSignedState.initHostedChannel.ticker
       val rate = toHumanRate(hc.lastCrossSignedState.rate)
       val serverRate = toHumanRate(hc.currentHostRate)
       val capacity = hc.lastCrossSignedState.initHostedChannel.channelCapacityMsat
@@ -272,9 +273,9 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
       setVis(isVisible = true, rateText)
       setVis(isVisible = true, fiatText)
       setVis(isVisible = true, reserveText)
-      serverRateText.setText(fiatOrNothing(serverRate, cardIn,"EUR/BTC").html)
-      rateText.setText(fiatOrNothing(rate, cardIn,"EUR/BTC").html)
-      fiatText.setText(fiatOrNothing(hc.fiatValue, cardIn, "EUR").html)
+      serverRateText.setText(fiatOrNothing(serverRate, cardIn,s"${ticker.tag}/BTC").html)
+      rateText.setText(fiatOrNothing(rate, cardIn,s"${ticker.tag}/BTC").html)
+      fiatText.setText(fiatOrNothing(hc.fiatValue, cardIn, ticker.tag).html)
 
       totalCapacityText.setText(sumOrNothing(capacity, cardIn).html)
       canReceiveText.setText(sumOrNothing(hc.availableForReceive, cardOut).html)

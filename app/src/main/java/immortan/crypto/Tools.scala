@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream
 import java.nio.ByteOrder
 import java.util.concurrent.TimeUnit
 import java.nio.charset.StandardCharsets
-
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import com.sparrowwallet.hummingbird.UR
 import com.sparrowwallet.hummingbird.registry.CryptoPSBT
@@ -20,6 +19,7 @@ import fr.acinq.eclair.router.Graph.GraphStructure.GraphEdge
 import fr.acinq.eclair.router.RouteCalculation
 import fr.acinq.eclair.router.Router.ChannelDesc
 import fr.acinq.eclair.transactions.CommitmentSpec
+import immortan.Ticker
 import immortan.crypto.Noise.KeyPair
 import immortan.crypto.Tools.runAnd
 import immortan.utils.{FeeRatesInfo, ThrottledWork}
@@ -95,14 +95,14 @@ object Tools {
     if (pubkey1First) pubkey1 ++ pubkey2 else pubkey2 ++ pubkey1
   }
 
-  def hostedChanId(pubkey1: ByteVector, pubkey2: ByteVector, ticker: String): ByteVector32 = {
+  def hostedChanId(pubkey1: ByteVector, pubkey2: ByteVector, ticker: Ticker): ByteVector32 = {
     val nodesCombined = hostedNodesCombined(pubkey1, pubkey2)
-    val tickerBytes = ticker.getBytes(StandardCharsets.UTF_8)
+    val tickerBytes = ticker.tag.getBytes(StandardCharsets.UTF_8)
     Crypto.sha256(nodesCombined ++ ByteVector(tickerBytes))
   }
 
-  def hostedShortChanId(pubkey1: ByteVector, pubkey2: ByteVector, ticker: String): Long = {
-    val tickerBytes = ticker.getBytes(StandardCharsets.UTF_8)
+  def hostedShortChanId(pubkey1: ByteVector, pubkey2: ByteVector, ticker: Ticker): Long = {
+    val tickerBytes = ticker.tag.getBytes(StandardCharsets.UTF_8)
     val hash = hostedNodesCombined(pubkey1, pubkey2) ++ ByteVector(tickerBytes)
     val stream = new ByteArrayInputStream(hash.toArray)
     def getChunk: Long = Protocol.uint64(stream, ByteOrder.BIG_ENDIAN)

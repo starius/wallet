@@ -3,7 +3,8 @@ package fr.acinq.eclair.wire
 import fr.acinq.eclair._
 import fr.acinq.eclair.wire.ChannelCodecs._
 import fr.acinq.eclair.wire.CommonCodecs._
-import scodec.{Attempt, Codec, DecodeResult}
+import immortan.Ticker
+import scodec.{Attempt, Codec, DecodeResult, Err}
 import scodec.bits.{BitVector, ByteVector}
 import scodec.codecs._
 
@@ -265,12 +266,16 @@ object LightningMessageCodecs {
   }.as[UnknownMessage]
 
   // HOSTED CHANNELS
+  val tickerCodec = {
+    val tag: Codec[Ticker] = variableSizeBytes(uint16, utf8).narrow(tag => Attempt.fromOption(Ticker.tickerByTag(tag), Err.apply(s"Unknown ticker ${tag}")), _.tag)
+    tag withContext "tag"
+  }.as[Ticker]
 
   val invokeHostedChannelCodec = {
     (bytes32 withContext "chainHash") ::
       (varsizebinarydata withContext "refundScriptPubKey") ::
       (varsizebinarydata withContext "secret") ::
-      (variableSizeBytes(uint16, utf8) withContext "ticker")
+      (tickerCodec withContext "ticker")
   }.as[InvokeHostedChannel]
 
   lazy val initHostedChannelCodec = {
@@ -280,7 +285,7 @@ object LightningMessageCodecs {
       (millisatoshi withContext "channelCapacityMsat") ::
       (millisatoshi withContext "initialClientBalanceMsat") ::
       (millisatoshi withContext "initialRate") ::
-      (variableSizeBytes(uint16, utf8) withContext "ticker") ::
+      (tickerCodec withContext "ticker") ::
       (listOfN(uint16, uint16) withContext "features")
   }.as[InitHostedChannel]
 
@@ -402,16 +407,6 @@ object LightningMessageCodecs {
   final val HC_REPLY_RATE_TAG = 52511
 
   final val HC_MARGIN_CHANNEL_TAG = 53495
-
-  // Tickers
-
-  final val USD_TICKER = "USD"
-  final val EUR_TICKER = "EUR"
-
-  final val knownTickers: Set[String] = Set(
-    USD_TICKER,
-    EUR_TICKER
-  )
 
   // SWAP-IN
 

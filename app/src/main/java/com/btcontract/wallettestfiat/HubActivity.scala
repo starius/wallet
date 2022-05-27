@@ -33,11 +33,11 @@ import fr.acinq.eclair.blockchain.fee.FeeratePerByte
 import fr.acinq.eclair.channel._
 import fr.acinq.eclair.router.Router
 import fr.acinq.eclair.transactions.{LocalFulfill, RemoteFulfill, Scripts}
-import fr.acinq.eclair.wire.LightningMessageCodecs.USD_TICKER
 import fr.acinq.eclair.wire.{FullPaymentTag, NodeAnnouncement, PaymentTagTlv, UnknownNextPeer}
 import immortan.ChannelListener.Malfunction
 import immortan.ChannelMaster.{OutgoingAdds, RevealedLocalFulfills}
 import immortan.PathFinder.{ExpectedRouteFees, GetExpectedRouteFees}
+import immortan.Ticker.USD_TICKER
 import immortan._
 import immortan.crypto.CanBeRepliedTo
 import immortan.crypto.Tools._
@@ -72,7 +72,7 @@ object HubActivity {
   var allInfos: Seq[TransactionDetails] = Nil
   var instance: HubActivity = _
 
-  def requestHostedChannel(ticker: String): Unit = {
+  def requestHostedChannel(ticker: Ticker): Unit = {
     val localParams = LNParams.makeChannelParams(isFunder = false, LNParams.minChanDustLimit)
     new HCOpenHandler(LNParams.syncParams.localNode, randomBytes32, localParams.defaultFinalScriptPubKey, ticker, LNParams.cm) {
       // Stop automatic HC opening attempts on getting any kind of local/remote error, this won't be triggered on disconnect

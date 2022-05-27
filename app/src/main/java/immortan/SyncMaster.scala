@@ -5,10 +5,10 @@ import fr.acinq.bitcoin.Crypto.PublicKey
 import fr.acinq.eclair.Features.ChannelRangeQueriesExtended
 import fr.acinq.eclair.router.Router.Data
 import fr.acinq.eclair.router.{Announcements, Sync}
-import fr.acinq.eclair.wire.LightningMessageCodecs.USD_TICKER
 import fr.acinq.eclair.wire.QueryShortChannelIdsTlv.QueryFlagType._
 import fr.acinq.eclair.wire._
 import immortan.SyncMaster._
+import immortan.Ticker.USD_TICKER
 import immortan.crypto.Noise.KeyPair
 import immortan.crypto.Tools._
 import immortan.crypto.{CanBeRepliedTo, StateMachine, Tools}

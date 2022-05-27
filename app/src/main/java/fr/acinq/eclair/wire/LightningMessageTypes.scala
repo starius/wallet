@@ -8,9 +8,10 @@ import fr.acinq.eclair.blockchain.fee.FeeratePerKw
 import fr.acinq.eclair.payment.PaymentRequest
 import fr.acinq.eclair.router.{Announcements, Sync}
 import immortan.crypto.Tools
-import immortan.{ChannelMaster, LNParams, RemoteNodeInfo}
+import immortan.{ChannelMaster, LNParams, RemoteNodeInfo, Ticker}
 import scodec.DecodeResult
 import scodec.bits.ByteVector
+
 import java.net.{Inet4Address, Inet6Address, InetAddress, InetSocketAddress}
 import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
@@ -238,10 +239,10 @@ case class UnknownMessage(tag: Int, data: ByteVector) extends LightningMessage
 
 trait HostedChannelMessage extends LightningMessage
 
-case class InvokeHostedChannel(chainHash: ByteVector32, refundScriptPubKey: ByteVector, secret: ByteVector = ByteVector.empty, ticker: String) extends HostedChannelMessage
+case class InvokeHostedChannel(chainHash: ByteVector32, refundScriptPubKey: ByteVector, secret: ByteVector = ByteVector.empty, ticker: Ticker) extends HostedChannelMessage
 
 case class InitHostedChannel(maxHtlcValueInFlightMsat: UInt64, htlcMinimumMsat: MilliSatoshi, maxAcceptedHtlcs: Int, channelCapacityMsat: MilliSatoshi,
-                             initialClientBalanceMsat: MilliSatoshi, initialRate: MilliSatoshi, ticker: String, features: List[Int] = Nil) extends HostedChannelMessage
+                             initialClientBalanceMsat: MilliSatoshi, initialRate: MilliSatoshi, ticker: Ticker, features: List[Int] = Nil) extends HostedChannelMessage
 
 case class HostedChannelBranding(rgbColor: Color, pngIcon: Option[ByteVector], contactInfo: String) extends HostedChannelMessage
 

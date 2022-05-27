@@ -173,12 +173,23 @@ object ImplicitJsonFormats extends DefaultJsonProtocol {
     }
   }
 
+  implicit object TickerFmt extends JsonFormat[Ticker] {
+    def write(unserialized: Ticker): JsValue = throw new RuntimeException
+    def read(serialized: JsValue): Ticker = {
+      val tag = serialized.convertTo[String]
+      Ticker.tickerByTag(tag) match {
+        case Some(ticker) => ticker
+        case _ => throw new Exception(s"Unknown ticker ${tag}")
+      }
+    }
+  }
+
   // Note: tag on these MUST start with lower case because it is defined that way on protocol level
 
   implicit val normalChannelRequestFmt: JsonFormat[NormalChannelRequest] = taggedJsonFmt(jsonFormat[String, String, String,
     NormalChannelRequest](NormalChannelRequest.apply, "uri", "callback", "k1"), tag = "channelRequest")
 
-  implicit val hostedChannelRequestFmt: JsonFormat[HostedChannelRequest] = taggedJsonFmt(jsonFormat[String, Option[String], String, String,
+  implicit val hostedChannelRequestFmt: JsonFormat[HostedChannelRequest] = taggedJsonFmt(jsonFormat[String, Option[String], String, Ticker,
     HostedChannelRequest](HostedChannelRequest.apply, "uri", "alias", "k1", "ticker"), tag = "hostedChannelRequest")
 
   implicit val withdrawRequestFmt: JsonFormat[WithdrawRequest] = taggedJsonFmt(jsonFormat[String, String, Long, String, Option[Long], Option[Long], Option[String], Option[String],

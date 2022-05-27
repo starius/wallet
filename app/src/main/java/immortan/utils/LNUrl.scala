@@ -9,7 +9,7 @@ import immortan.crypto.Tools
 import immortan.crypto.Tools.Any2Some
 import immortan.utils.ImplicitJsonFormats._
 import immortan.utils.uri.Uri
-import immortan.{LNParams, PaymentAction, RemoteNodeInfo}
+import immortan.{LNParams, PaymentAction, RemoteNodeInfo, Ticker}
 import rx.lang.scala.Observable
 import scodec.bits.ByteVector
 import spray.json._
@@ -115,7 +115,7 @@ case class NormalChannelRequest(uri: String, callback: String, k1: String) exten
   val remoteInfo: RemoteNodeInfo = RemoteNodeInfo(pubKey, address, hostAddress)
 }
 
-case class HostedChannelRequest(uri: String, alias: Option[String], k1: String, ticker: String) extends LNUrlData with HasRemoteInfo {
+case class HostedChannelRequest(uri: String, alias: Option[String], k1: String, ticker: Ticker) extends LNUrlData with HasRemoteInfo {
 
   val secret: ByteVector32 = ByteVector32.fromValidHex(k1)
 
