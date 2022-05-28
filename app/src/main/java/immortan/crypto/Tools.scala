@@ -103,7 +103,7 @@ object Tools {
 
   def hostedShortChanId(pubkey1: ByteVector, pubkey2: ByteVector, ticker: Ticker): Long = {
     val tickerBytes = ticker.tag.getBytes(StandardCharsets.UTF_8)
-    val hash = hostedNodesCombined(pubkey1, pubkey2) ++ ByteVector(tickerBytes)
+    val hash = Crypto.sha256(hostedNodesCombined(pubkey1, pubkey2) ++ ByteVector(tickerBytes))
     val stream = new ByteArrayInputStream(hash.toArray)
     def getChunk: Long = Protocol.uint64(stream, ByteOrder.BIG_ENDIAN)
     List.fill(8)(getChunk).sum
