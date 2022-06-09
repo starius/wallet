@@ -12,12 +12,12 @@ android {
 
     defaultConfig {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        applicationId 'com.btcontract.wallettestfiat'
+        applicationId 'com.btcontract.walletfiat'
         multiDexEnabled true
         targetSdkVersion 30
         minSdkVersion 21
 
-        versionName '2.5.2'
+        versionName '3.0.0'
         versionCode 89
 
         ndk {

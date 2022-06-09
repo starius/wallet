@@ -24,7 +24,7 @@ Simple Bitcoin Wallet (aka SBW) is an [IMMORTAN](https://github.com/btcontract/I
 ```
 git clone https://github.com/btcontract/wallet.git
 cd wallet
-git checkout 2.5.2
+git checkout 3.0.0
 podman build -t sbw .
 podman run -v $PWD:/app/simplebitcoinwallet/wallet:z sbw
 ```

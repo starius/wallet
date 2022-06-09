@@ -41,7 +41,7 @@ import androidx.core.view.GestureDetectorCompat;
 import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
 
-import com.btcontract.wallettestfiat.R;
+import com.btcontract.walletfiat.R;
 
 @SuppressLint("RtlHardcoded")
 public class SwipeRevealLayout extends ViewGroup implements View.OnLongClickListener {
