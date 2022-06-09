@@ -77,7 +77,7 @@ object WalletApp {
   final val OPEN_HC = "openHc1"
 
   def useAuth: Boolean = app.prefs.getBoolean(USE_AUTH, false)
-  def fiatCode: String = app.prefs.getString(FIAT_CODE, "eur")
+  def fiatCode: String = app.prefs.getString(FIAT_CODE, "usd")
   def ensureTor: Boolean = app.prefs.getBoolean(ENSURE_TOR, false)
   def capLNFeeToChain: Boolean = app.prefs.getBoolean(CAP_LN_FEE_TO_CHAIN, false)
   def showRateUs: Boolean = app.prefs.getBoolean(SHOW_RATE_US, true)
