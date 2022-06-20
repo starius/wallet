@@ -1,1 +1,1 @@
-Bitcoin wallet with Lightning Network support
+Synthetic asssets for Lightning Network

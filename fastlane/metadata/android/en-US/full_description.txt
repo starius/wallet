@@ -1,1 +1,5 @@
-Simple Bitcoin Wallet (aka SBW) is an open-source, non-custodial, autonomous Bitcoin wallet for Android devices which can store BTC as well as send and receive Bitcoin transactions. On top of that SBW provides an extensive Lightning Network support and is capable of sending, receiving and routing of Lightning payments. 
+That is fork of original SBW wallet that is modified to support synthetic stables based on hosted channels. You can read about them here: https://standardsats.github.io
+
+Besides that the wallet provides all original features of the SBW:
+- non custodial bitcoin storage
+- full Lightning node inside your phone
