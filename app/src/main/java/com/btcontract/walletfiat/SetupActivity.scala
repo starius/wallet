@@ -33,7 +33,9 @@ object SetupActivity {
       val compressedPlainBytes = ByteStreams.toByteArray(host.getAssets open snapshotName)
       val plainBytes = ExtCodecs.compressedByteVecCodec.decode(BitVector view compressedPlainBytes)
       LocalBackup.copyPlainDataToDbLocation(host, WalletApp.dbFileNameGraph, plainBytes.require.value)
-    } catch none
+    } catch {
+      case e: Throwable => println(s"Failed to read compressed graph due: $e")
+    }
 
     WalletApp.extDataBag.putSecret(secret)
     WalletApp.makeOperational(secret)

@@ -13,7 +13,7 @@ case class HostedState(nodeId1: PublicKey, nodeId2: PublicKey, lastCrossSignedSt
 
 object ExtCodecs {
   val compressedByteVecCodec = {
-    val plain = variableSizeBytes(uint24, bytes)
+    val plain = variableSizeBytes(int32, bytes)
     zlib(plain)
   }
 
