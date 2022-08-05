@@ -22,4 +22,4 @@ RUN set -ex; \
    
 WORKDIR /app/simplebitcoinwallet/wallet/
 
-CMD ./gradlew assembleRelease
+CMD ./gradlew assembleRelease && ./gradlew bundleRelease

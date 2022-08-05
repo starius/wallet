@@ -13,12 +13,12 @@ object FiatRates {
 }
 
 class FiatRates(bag: DataBag) extends CanBeShutDown {
-  val customFiatSymbols: Map[String, String] = Map("rub" -> "\u20BD", "usd" -> "$", "inr" -> "₹", "gbp" -> "£", "cny" -> "CN¥", "jpy" -> "¥", "brl" -> "R$", "eur" -> "€", "krw" -> "₩", "cym" -> "￠")
+  val customFiatSymbols: Map[String, String] = Map("rub" -> "\u20BD", "usd" -> "$", "inr" -> "₹", "gbp" -> "£", "cny" -> "CN¥", "jpy" -> "¥", "brl" -> "R$", "eur" -> "€", "krw" -> "₩", "cym" -> "￠", "lvl" -> "ℒ\uD835\uDCC8")
 
   val universallySupportedSymbols: Map[String, String] = Map("usd" -> "US Dollar", "eur" -> "Euro", "jpy" -> "Japanese Yen", "cny" -> "Chinese Yuan", "inr" -> "Indian Rupee", "cad" -> "Canadian Dollar",
     "rub" -> "Русский Рубль", "brl" -> "Real Brasileiro", "czk" -> "Česká Koruna", "gbp" -> "Pound Sterling", "aud" -> "Australian Dollar", "try" -> "Turkish Lira", "nzd" -> "New Zealand Dollar",
     "thb" -> "Thai Baht", "twd" -> "New Taiwan Dollar", "krw" -> "South Korean won", "clp" -> "Chilean Peso", "sgd" -> "Singapore Dollar", "hkd" -> "Hong Kong Dollar", "pln" -> "Polish złoty",
-    "dkk" -> "Danish Krone", "sek" -> "Swedish Krona", "chf" -> "Swiss franc", "huf" -> "Hungarian forint", "cym" -> "Welsh Pound")
+    "dkk" -> "Danish Krone", "sek" -> "Swedish Krona", "chf" -> "Swiss franc", "huf" -> "Hungarian forint", "cym" -> "Welsh Pound", "lvl" -> "Latvian lat")
 
   def reloadData: Tools.Fiat2Btc = fr.acinq.eclair.secureRandom nextInt 3 match {
     case 0 => to[CoinGecko](Tools.get("https://api.coingecko.com/api/v3/exchange_rates").string).rates.map { case (code, item) => code.toLowerCase -> item.value }
@@ -27,7 +27,8 @@ class FiatRates(bag: DataBag) extends CanBeShutDown {
   }
 
   def enrichFiats(fs: Tools.Fiat2Btc): Tools.Fiat2Btc = fs ++ Map(
-    "cym" -> fs.get("eur").getOrElse(0.0)
+    "cym" -> fs.get("eur").getOrElse(0.0),
+    "lvl" -> 1.423 * fs.get("eur").getOrElse(0.0) // Last known exchange rate
   )
 
   override def becomeShutDown: Unit = {
