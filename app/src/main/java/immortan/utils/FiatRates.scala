@@ -26,6 +26,10 @@ class FiatRates(bag: DataBag) extends CanBeShutDown {
     case _ => to[Bitpay](Tools.get("https://bitpay.com/rates").string).data.map { case BitpayItem(code, rate) => code.toLowerCase -> rate }.toMap
   }
 
+  def enrichFiats(fs: Tools.Fiat2Btc): Tools.Fiat2Btc = fs ++ Map(
+    "cym" -> fs.get("eur").getOrElse(0.0)
+  )
+
   override def becomeShutDown: Unit = {
     subscription.unsubscribe
     listeners = Set.empty
@@ -44,7 +48,7 @@ class FiatRates(bag: DataBag) extends CanBeShutDown {
   }
 
   val subscription: Subscription = retryRepeatDelayedCall.subscribe(newRates => {
-    info = FiatRatesInfo(newRates, info.rates, System.currentTimeMillis)
+    info = FiatRatesInfo(enrichFiats(newRates), info.rates, System.currentTimeMillis)
     for (lst <- listeners) lst.onFiatRates(info)
   }, Tools.none)
 }
