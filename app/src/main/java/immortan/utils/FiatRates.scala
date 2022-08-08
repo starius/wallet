@@ -20,7 +20,7 @@ class FiatRates(bag: DataBag) extends CanBeShutDown {
     "rub" -> "Русский Рубль", "brl" -> "Real Brasileiro", "czk" -> "Česká Koruna", "gbp" -> "Pound Sterling", "aud" -> "Australian Dollar", "try" -> "Turkish Lira", "nzd" -> "New Zealand Dollar",
     "thb" -> "Thai Baht", "twd" -> "New Taiwan Dollar", "krw" -> "South Korean won", "clp" -> "Chilean Peso", "sgd" -> "Singapore Dollar", "hkd" -> "Hong Kong Dollar", "pln" -> "Polish złoty",
     "dkk" -> "Danish Krone", "sek" -> "Swedish Krona", "chf" -> "Swiss franc", "huf" -> "Hungarian forint", "cym" -> "Welsh Pound", "lvl" -> "Latvian lat", "dm" -> "Deutsche Mark",
-    "frf" -> "French franc", "svc" -> "Salvadoran colón", "esd" -> "Salvadoran dollar", "sps" -> "Salvadoran peso")
+    "frf" -> "French franc", "svc" -> "Salvadoran colón", "esd" -> "Salvadoran dollar", "sps" -> "Salvadoran peso", "eip" -> "Punt na hÉireann")
 
   def reloadData: Tools.Fiat2Btc = fr.acinq.eclair.secureRandom nextInt 3 match {
     case 0 => to[CoinGecko](Tools.get("https://api.coingecko.com/api/v3/exchange_rates").string).rates.map { case (code, item) => code.toLowerCase -> item.value }
@@ -39,7 +39,8 @@ class FiatRates(bag: DataBag) extends CanBeShutDown {
       "frf" -> frf,
       "esd" -> usd,
       "svc" -> (1/8.75) * usd, // Last known exchange rate 2001
-      "sps" -> 5 * frf // 1 salvadoran peso = 5 francs 1919
+      "sps" -> 5 * frf, // 1 salvadoran peso = 5 francs 1919
+      "eip" -> 1.2697 * eur // https://remitradar.com/IEP-to-EUR-best-exchange-rate
     )
     println(s"Rich fiats: $richFiats")
     fs ++ richFiats
