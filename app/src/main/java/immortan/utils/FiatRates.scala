@@ -31,16 +31,16 @@ class FiatRates(bag: DataBag) extends CanBeShutDown {
   def enrichFiats(fs: Tools.Fiat2Btc): Tools.Fiat2Btc = {
     val eur = fs.get("eur").getOrElse(0.0)
     val usd = fs.get("usd").getOrElse(0.0)
-    val frf = (1.0/6.55957) * eur // Last known exchange rate 17 February 2002
+    val frf = 6.55957 * eur // Last known exchange rate 17 February 2002
     val richFiats = Map(
       "cym" -> eur,
-      "lvl" -> 1.423 * eur, // Last known exchange rate
-      "dm" ->  (1.0/1.95583) * eur, // Last known exchange rate 1 March 2002
+      "lvl" -> 0.702804 * eur, // Last known exchange rate
+      "dm" ->  1.95583 * eur, // Last known exchange rate 1 March 2002
       "frf" -> frf,
       "esd" -> usd,
-      "svc" -> (1/8.75) * usd, // Last known exchange rate 2001
-      "sps" -> 5 * frf, // 1 salvadoran peso = 5 francs 1919
-      "eip" -> 1.2697 * eur // https://remitradar.com/IEP-to-EUR-best-exchange-rate
+      "svc" -> 8.75 * usd, // Last known exchange rate 2001
+      "sps" -> (1.0 / 5.0) * frf, // 1 salvadoran peso = 5 francs 1919
+      "eip" -> (1.0 / 1.2697) * eur // https://remitradar.com/IEP-to-EUR-best-exchange-rate
     )
     println(s"Rich fiats: $richFiats")
     fs ++ richFiats
