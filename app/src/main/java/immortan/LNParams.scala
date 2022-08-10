@@ -201,7 +201,7 @@ class SyncParams {
   val silentBob: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"02e9046555a9665145b0dbd7f135744598418df7d61d3660659641886ef1274844"), NodeAddress.unresolved(9735, host = 31, 16, 52, 37), "SilentBob")
   val lightning: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"03baa70886d9200af0ffbd3f9e18d96008331c858456b16e3a9b41e735c6208fef"), NodeAddress.unresolved(9735, host = 45, 20, 67, 1), "LIGHTNING")
   val acinq: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"03864ef025fde8fb587d989186ce6a4a186895ee44a926bfc370e2c366597a3f8f"), NodeAddress.unresolved(9735, host = 34, 239, 230, 56), "ACINQ")
-  val localNode: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"035912832c3eea544dc1c1bd4569f3f1f4ef58887c4df88fa17a899c84f093e3e6"), NodeAddress.unresolved(9735, host = 10, 0, 2, 2), "localnode")
+  val localNode: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"035912832c3eea544dc1c1bd4569f3f1f4ef58887c4df88fa17a899c84f093e3e6"), NodeAddress.unresolved(56175, host = 10, 0, 2, 2), "localnode")
 
   val syncNodes: Set[RemoteNodeInfo] = Set(satm, motherbase, bCashIsTrash, ergveinNet, localNode, conductor, silentBob, lightning, acinq)
   val phcSyncNodes: Set[RemoteNodeInfo] = Set(satm, motherbase, lntxbot1)
@@ -221,9 +221,9 @@ class SyncParams {
 class TestNetSyncParams extends SyncParams {
   val sbw: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"03b8534f2d84de39a68d1359f6833fde819b731e188ddf633a666f7bf8c1d7650a"), NodeAddress.unresolved(9735, host = 45, 61, 187, 156), "SBW")
   val endurance: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"03933884aaf1d6b108397e5efe5c86bcf2d8ca8d2f700eda99db9214fc2712b134"), NodeAddress.unresolved(9735, host = 76, 223, 71, 211), "Endurance")
-  val localhost: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"035912832c3eea544dc1c1bd4569f3f1f4ef58887c4df88fa17a899c84f093e3e6"), NodeAddress.unresolved(9735, host = 10, 0, 2, 2), "localhost")
-  override val syncNodes: Set[RemoteNodeInfo] = Set(endurance, localhost, sbw)
-  override val phcSyncNodes: Set[RemoteNodeInfo] = Set(localhost, sbw)
+  override val localNode: RemoteNodeInfo = RemoteNodeInfo(PublicKey(hex"035912832c3eea544dc1c1bd4569f3f1f4ef58887c4df88fa17a899c84f093e3e6"), NodeAddress.unresolved(56175, host = 10, 0, 2, 2), "localhost")
+  override val syncNodes: Set[RemoteNodeInfo] = Set(endurance, localNode, sbw)
+  override val phcSyncNodes: Set[RemoteNodeInfo] = Set(localNode, sbw)
   override val minCapacity: MilliSatoshi = MilliSatoshi(100000000L)
   override val minNormalChansForPHC = 1
   override val maxNodesToSyncFrom = 1
