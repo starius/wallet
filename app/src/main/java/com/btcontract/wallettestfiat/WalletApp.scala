@@ -142,7 +142,7 @@ object WalletApp {
     LNParams.logBag = new SQLiteLog(miscInterface)
     LNParams.chainHash = Block.TestnetGenesisBlock.hash
     LNParams.routerConf = RouterConf(10, LNParams.maxCltvExpiryDelta)
-    LNParams.syncParams = new SyncParams
+    LNParams.syncParams = new TestNetSyncParams
     LNParams.ourInit = LNParams.createInit
   }
 
