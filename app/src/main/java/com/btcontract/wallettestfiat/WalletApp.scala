@@ -274,7 +274,7 @@ object WalletApp {
 
     pf.listeners += LNParams.cm.opm
     // Get channels and still active FSMs up and running
-    LNParams.cm.all = Channel.load(listeners = Set(LNParams.cm), chanBag)
+    LNParams.cm.all = Channel.load(listeners = Set(LNParams.cm), paymentListeners = LNParams.cm.externalPaymentRequestListeners, chanBag)
     // Only schedule periodic resync if Lightning channels are being present
     if (LNParams.cm.all.nonEmpty) pf process PathFinder.CMDStartPeriodicResync
     // This inital notification will create all in/routed/out FSMs

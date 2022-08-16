@@ -1,7 +1,6 @@
 package immortan
 
 import java.util.concurrent.Executors
-
 import akka.actor.{Actor, ActorRef, Props}
 import fr.acinq.bitcoin.ByteVector32
 import fr.acinq.eclair.MilliSatoshi
@@ -13,6 +12,7 @@ import immortan.Channel.channelContext
 import immortan.crypto.Tools._
 import immortan.crypto.{CanBeRepliedTo, StateMachine}
 
+import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.util.Failure
@@ -29,9 +29,9 @@ object Channel {
   // Single stacking thread for all channels, must be used when asking channels for pending payments to avoid race conditions
   implicit val channelContext: ExecutionContextExecutor = scala.concurrent.ExecutionContext fromExecutor Executors.newSingleThreadExecutor
 
-  def load(listeners: Set[ChannelListener], bag: ChannelBag): Map[ByteVector32, Channel] = bag.all.map {
+  def load(listeners: Set[ChannelListener], paymentListeners: mutable.Set[ExternalPaymentListener], bag: ChannelBag): Map[ByteVector32, Channel] = bag.all.map {
     case data: HasNormalCommitments => data.channelId -> ChannelNormal.make(listeners, data, bag)
-    case data: HostedCommits => data.channelId -> ChannelHosted.make(listeners, data, bag)
+    case data: HostedCommits => data.channelId -> ChannelHosted.make(listeners, paymentListeners, data, bag)
     case _ => throw new RuntimeException
   }.toMap
 

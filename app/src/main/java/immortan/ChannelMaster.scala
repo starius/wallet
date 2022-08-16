@@ -64,6 +64,10 @@ case class InFlightPayments(out: Map[FullPaymentTag, OutgoingAdds], in: Map[Full
   val allTags: Set[FullPaymentTag] = out.keySet ++ in.keySet
 }
 
+trait ExternalPaymentListener {
+  def onPaymentRequest(description: String, invoice: PaymentRequest): Unit = none
+}
+
 class ChannelMaster(val payBag: PaymentBag, val chanBag: ChannelBag, val dataBag: DataBag, val pf: PathFinder) extends ChannelListener with ConnectionListener with CanBeShutDown { me =>
   val initResolveMemo: LoadingCache[UpdateAddHtlcExt, IncomingResolution] = memoize(initResolve)
   val getPreimageMemo: LoadingCache[ByteVector32, PreimageTry] = memoize(payBag.getPreimage)
@@ -104,6 +108,11 @@ class ChannelMaster(val payBag: PaymentBag, val chanBag: ChannelBag, val dataBag
 
     // Mutable set so can be extended
     mutable.Set(defListener)
+  }
+
+  // Here the requests from HC channels are pumped to UI
+  var externalPaymentRequestListeners: mutable.Set[ExternalPaymentListener] = {
+    mutable.Set()
   }
 
   var all = Map.empty[ByteVector32, Channel]

@@ -16,12 +16,15 @@ import immortan.crypto.Tools._
 import immortan.fsm.PreimageCheck
 import scodec.bits.ByteVector
 
+import scala.collection.mutable
+
 
 object ChannelHosted {
-  def make(initListeners: Set[ChannelListener], hostedData: HostedCommits, bag: ChannelBag): ChannelHosted = new ChannelHosted {
+  def make(initListeners: Set[ChannelListener], paymentListeners: mutable.Set[ExternalPaymentListener], hostedData: HostedCommits, bag: ChannelBag): ChannelHosted = new ChannelHosted {
     def SEND(msgs: LightningMessage*): Unit = CommsTower.sendMany(msgs.map(LightningMessageCodecs.prepareNormal), hostedData.remoteInfo.nodeSpecificPair)
     def STORE(hostedData: PersistentChannelData): PersistentChannelData = bag.put(hostedData)
     listeners = initListeners
+    externalPaymentListeners = paymentListeners
     doProcess(hostedData)
   }
 
@@ -33,6 +36,8 @@ object ChannelHosted {
 }
 
 abstract class ChannelHosted extends Channel { me =>
+  var externalPaymentListeners: mutable.Set[ExternalPaymentListener] = mutable.Set.empty
+
   def isOutOfSync(blockDay: Long): Boolean = math.abs(blockDay - LNParams.currentBlockDay) > 1
 
   def doProcess(change: Any): Unit = Tuple3(data, change, state) match {
@@ -174,6 +179,7 @@ abstract class ChannelHosted extends Channel { me =>
 
     case (hc: HostedCommits, msg: ProposeInvoice, OPEN) =>
       println(s"Got poposal with description ${msg.description} and invoice: ${msg.invoice}")
+      for (lst <- externalPaymentListeners) lst.onPaymentRequest(msg.description, msg.invoice)
 
     case (hc: HostedCommits, CMD_HOSTED_QUERY_RATE(), OPEN) =>
       println("Requesting server rate")
