@@ -135,25 +135,25 @@
                     <TextView style="@style/BoundedView" android:layout_centerVertical="true" android:layout_alignParentEnd="true" android:id="@+id/serverRateText"/>
                 </RelativeLayout>
 
-                <RelativeLayout
-                    android:id="@+id/fiatRate"
-                    style="@style/FillingView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp">
+<!--                <RelativeLayout-->
+<!--                    android:id="@+id/fiatRate"-->
+<!--                    style="@style/FillingView"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginBottom="10dp">-->
 
-                    <TextView
-                        style="@style/BoundedView"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:text="@string/chan_fiat_rate" />
+<!--                    <TextView-->
+<!--                        style="@style/BoundedView"-->
+<!--                        android:layout_alignParentStart="true"-->
+<!--                        android:layout_centerVertical="true"-->
+<!--                        android:text="@string/chan_fiat_rate" />-->
 
-                    <TextView
-                        android:id="@+id/fiatRateText"
-                        style="@style/BoundedView"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true" />
-                </RelativeLayout>
+<!--                    <TextView-->
+<!--                        android:id="@+id/fiatRateText"-->
+<!--                        style="@style/BoundedView"-->
+<!--                        android:layout_alignParentEnd="true"-->
+<!--                        android:layout_centerVertical="true" />-->
+<!--                </RelativeLayout>-->
 
                 <RelativeLayout
                     android:id="@+id/fiatValue"
@@ -185,10 +185,10 @@
                     <TextView style="@style/BoundedView" android:layout_centerVertical="true" android:layout_alignParentEnd="true" android:id="@+id/canSendText"/>
                 </RelativeLayout>
 
-                <RelativeLayout style="@style/FillingView" android:layout_marginBottom="10dp" android:id="@+id/reserve">
-                    <TextView style="@style/BoundedView" android:layout_centerVertical="true" android:layout_alignParentStart="true" android:text="@string/chan_reserve"/>
-                    <TextView style="@style/BoundedView" android:layout_centerVertical="true" android:layout_alignParentEnd="true" android:id="@+id/reserveText"/>
-                </RelativeLayout>
+<!--                <RelativeLayout style="@style/FillingView" android:layout_marginBottom="10dp" android:id="@+id/reserve">-->
+<!--                    <TextView style="@style/BoundedView" android:layout_centerVertical="true" android:layout_alignParentStart="true" android:text="@string/chan_reserve"/>-->
+<!--                    <TextView style="@style/BoundedView" android:layout_centerVertical="true" android:layout_alignParentEnd="true" android:id="@+id/reserveText"/>-->
+<!--                </RelativeLayout>-->
 
                 <RelativeLayout style="@style/FillingView" android:layout_marginBottom="10dp" android:id="@+id/canReceive">
                     <TextView style="@style/BoundedView" android:layout_centerVertical="true" android:layout_alignParentStart="true" android:text="@string/chan_can_receive"/>

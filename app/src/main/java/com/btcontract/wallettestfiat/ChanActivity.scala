@@ -107,10 +107,10 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
     val chanState: View = swipeWrap.findViewById(R.id.chanState).asInstanceOf[View]
 
     val serverRateText: TextView = swipeWrap.findViewById(R.id.serverRateText).asInstanceOf[TextView]
-    val rateText: TextView = swipeWrap.findViewById(R.id.fiatRateText).asInstanceOf[TextView]
+//    val rateText: TextView = swipeWrap.findViewById(R.id.fiatRateText).asInstanceOf[TextView]
     val fiatText: TextView = swipeWrap.findViewById(R.id.fiatValueText).asInstanceOf[TextView]
     val canSendText: TextView = swipeWrap.findViewById(R.id.canSendText).asInstanceOf[TextView]
-    val reserveText: TextView = swipeWrap.findViewById(R.id.reserveText).asInstanceOf[TextView]
+//    val reserveText: TextView = swipeWrap.findViewById(R.id.reserveText).asInstanceOf[TextView]
     val canReceiveText: TextView = swipeWrap.findViewById(R.id.canReceiveText).asInstanceOf[TextView]
     val refundableAmountText: TextView = swipeWrap.findViewById(R.id.refundableAmountText).asInstanceOf[TextView]
     val paymentsInFlightText: TextView = swipeWrap.findViewById(R.id.paymentsInFlightText).asInstanceOf[TextView]
@@ -120,14 +120,14 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
 
     val wrappers: Seq[View] =
       swipeWrap.findViewById(R.id.progressBars).asInstanceOf[View] ::
-        swipeWrap.findViewById(R.id.fiatRate).asInstanceOf[View] ::
+//        swipeWrap.findViewById(R.id.fiatRate).asInstanceOf[View] ::
         swipeWrap.findViewById(R.id.fiatValue).asInstanceOf[View] ::
         swipeWrap.findViewById(R.id.totalCapacity).asInstanceOf[View] ::
         swipeWrap.findViewById(R.id.refundableAmount).asInstanceOf[View] ::
         swipeWrap.findViewById(R.id.paymentsInFlight).asInstanceOf[View] ::
         swipeWrap.findViewById(R.id.canReceive).asInstanceOf[View] ::
         swipeWrap.findViewById(R.id.canSend).asInstanceOf[View] ::
-        swipeWrap.findViewById(R.id.reserve).asInstanceOf[View] ::
+//        swipeWrap.findViewById(R.id.reserve).asInstanceOf[View] ::
         swipeWrap.findViewById(R.id.serverRate).asInstanceOf[View] ::
         Nil
 
@@ -155,14 +155,14 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
         setVis(isVisible = true, extraInfoText)
         extraInfoText.setText(getString(ln_info_opening).html)
         channelCard setOnClickListener bringChanOptions(normalChanActions.take(2), cs)
-        visibleExcept(R.id.progressBars, R.id.fiatRate, R.id.fiatValue, R.id.reserve, R.id.serverRate, R.id.paymentsInFlight, R.id.canReceive, R.id.canSend)
+        visibleExcept(R.id.progressBars, R.id.fiatValue, R.id.serverRate, R.id.paymentsInFlight, R.id.canReceive, R.id.canSend)
       } else if (Channel isOperational chan) {
         channelCard setOnClickListener bringChanOptions(normalChanActions, cs)
         setVis(isVisible = cs.updateOpt.isEmpty || tempFeeMismatch, extraInfoText)
         if (cs.updateOpt.isEmpty) extraInfoText.setText(ln_info_no_update)
         if (tempFeeMismatch) extraInfoText.setText(ln_info_fee_mismatch)
         visibleExcept(goneRes = -1)
-        visibleExcept(R.id.fiatRate, R.id.fiatValue, R.id.reserve, R.id.serverRate)
+        visibleExcept(R.id.fiatValue, R.id.serverRate)
       } else {
         val closeInfoRes = chan.data match {
           case _: DATA_WAIT_FOR_REMOTE_PUBLISH_FUTURE_COMMITMENT => ln_info_await_close
@@ -175,7 +175,7 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
         }
 
         channelCard setOnClickListener bringChanOptions(normalChanActions.take(2), cs)
-        visibleExcept(R.id.progressBars, R.id.fiatRate, R.id.fiatValue, R.id.reserve, R.id.serverRate, R.id.canReceive, R.id.canSend)
+        visibleExcept(R.id.progressBars,R.id.fiatValue, R.id.serverRate, R.id.canReceive, R.id.canSend)
         extraInfoText.setText(getString(closeInfoRes).html)
         setVis(isVisible = true, extraInfoText)
       }
@@ -270,17 +270,17 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
       baseBar.setProgress(barCanSend)
 
       setVis(isVisible = true, serverRateText)
-      setVis(isVisible = true, rateText)
+//      setVis(isVisible = true, rateText)
       setVis(isVisible = true, fiatText)
-      setVis(isVisible = true, reserveText)
+//      setVis(isVisible = true, reserveText)
       serverRateText.setText(fiatOrNothing(serverRate, cardIn,s"${ticker.tag}/BTC").html)
-      rateText.setText(fiatOrNothing(rate, cardIn,s"${ticker.tag}/BTC").html)
+//      rateText.setText(fiatOrNothing(rate, cardIn,s"${ticker.tag}/BTC").html)
       fiatText.setText(fiatOrNothing(hc.fiatValue, cardIn, ticker.tag).html)
 
       totalCapacityText.setText(sumOrNothing(capacity, cardIn).html)
       canReceiveText.setText(sumOrNothing(hc.availableForReceive, cardOut).html)
       canSendText.setText(sumOrNothing(hc.availableForSend, cardIn).html)
-      reserveText.setText(sumOrNothing(hc.reserveSats, cardIn).html)
+//      reserveText.setText(sumOrNothing(hc.reserveSats, cardIn).html)
       paymentsInFlightText.setText(sumOrNothing(inFlight, cardIn).html)
 
       // Order messages by degree of importance since user can only see a single one
