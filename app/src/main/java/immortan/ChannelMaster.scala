@@ -205,7 +205,15 @@ class ChannelMaster(val payBag: PaymentBag, val chanBag: ChannelBag, val dataBag
 
   def allInChannelOutgoing: Map[FullPaymentTag, OutgoingAdds] = all.values.flatMap(Channel.chanAndCommitsOpt).flatMap(_.commits.allOutgoing).groupBy(_.fullTag)
 
+  def allWithCommits: Map[ByteVector32, ChanAndCommits] = all.flatMap { case (i, c) => Channel.chanAndCommitsOpt(c).map((i, _)) }
+  def allBtc: Map[ByteVector32, (Channel, NormalCommits)] = allWithCommits.collect { case (i, ChanAndCommits(c, hc: NormalCommits)) => i -> (c, hc) }
+  def allHosted: Map[ByteVector32, (Channel, HostedCommits)] = allWithCommits.collect { case (i, ChanAndCommits(c, hc: HostedCommits)) => i -> (c, hc) }
   def allHostedCommits: Iterable[HostedCommits] = all.values.flatMap(Channel.chanAndCommitsOpt).collect { case ChanAndCommits(_, commits: HostedCommits) => commits }
+
+  def fiatUsd: Map[ByteVector32, (Channel, HostedCommits)] = hostedByTicker(Ticker.USD_TICKER)
+  def fiatEur: Map[ByteVector32, (Channel, HostedCommits)] = hostedByTicker(Ticker.EUR_TICKER)
+
+  def hostedByTicker(ticker: Ticker): Map[ByteVector32, (Channel, HostedCommits)] = allHosted.filter { case (_, (_, commits)) => commits.lastCrossSignedState.initHostedChannel.ticker == ticker }
 
   def allFromNode(nodeId: PublicKey): Iterable[ChanAndCommits] = all.values.flatMap(Channel.chanAndCommitsOpt).filter(_.commits.remoteInfo.nodeId == nodeId)
 

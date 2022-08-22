@@ -15,6 +15,7 @@ import com.btcontract.wallettestfiat.utils.LocalBackup
 import BaseActivity.StringOps
 import Colors._
 import HubActivity._
+import androidx.cardview.widget.CardView
 import com.btcontract.wallettestfiat.R.string._
 import com.chauthai.swipereveallayout.{SwipeRevealLayout, ViewBinderHelper}
 import com.github.mmin18.widget.RealtimeBlurView
@@ -52,6 +53,7 @@ import org.ndeftools.util.activity.NfcReaderActivity
 import rx.lang.scala.{Observable, Subscription}
 import spray.json._
 
+import java.text.DecimalFormat
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -851,10 +853,21 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
     val offlineIndicator: TextView = view.findViewById(R.id.offlineIndicator).asInstanceOf[TextView]
     val lnSyncIndicator: TextView = view.findViewById(R.id.lnSyncIndicator).asInstanceOf[TextView]
 
+    val usdCard: CardView = view.findViewById(R.id.usdCard).asInstanceOf[CardView]
+    val eurCard: CardView = view.findViewById(R.id.eurCard).asInstanceOf[CardView]
+
     val totalLightningBalance: TextView = view.findViewById(R.id.totalLightningBalance).asInstanceOf[TextView]
+    val totalUsdBalance: TextView = view.findViewById(R.id.totalUsdBalance).asInstanceOf[TextView]
+    val totalEurBalance: TextView = view.findViewById(R.id.totalEurBalance).asInstanceOf[TextView]
     val channelStateIndicators: RelativeLayout = view.findViewById(R.id.channelStateIndicators).asInstanceOf[RelativeLayout]
+    val channelStateIndicatorsUsd: RelativeLayout = view.findViewById(R.id.channelStateIndicatorsUsd).asInstanceOf[RelativeLayout]
+    val channelStateIndicatorsEur: RelativeLayout = view.findViewById(R.id.channelStateIndicatorsEur).asInstanceOf[RelativeLayout]
     val channelIndicator: ChannelIndicatorLine = view.findViewById(R.id.channelIndicator).asInstanceOf[ChannelIndicatorLine]
+    val channelIndicatorUsd: ChannelIndicatorLine = view.findViewById(R.id.channelIndicatorUsd).asInstanceOf[ChannelIndicatorLine]
+    val channelIndicatorEur: ChannelIndicatorLine = view.findViewById(R.id.channelIndicatorEur).asInstanceOf[ChannelIndicatorLine]
     val lnBalanceFiat: TextView = view.findViewById(R.id.lnBalanceFiat).asInstanceOf[TextView]
+    val lnBalanceFiatUsd: TextView = view.findViewById(R.id.lnBalanceFiatUsd).asInstanceOf[TextView]
+    val lnBalanceFiatEur: TextView = view.findViewById(R.id.lnBalanceFiatEur).asInstanceOf[TextView]
 
     val inFlightIncoming: TextView = view.findViewById(R.id.inFlightIncoming).asInstanceOf[TextView]
     val inFlightOutgoing: TextView = view.findViewById(R.id.inFlightOutgoing).asInstanceOf[TextView]
@@ -908,8 +921,16 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
     }
 
     def updateView: Unit = {
-      val allChannels = LNParams.cm.all.values.take(8)
-      val lnBalance = Channel.totalBalance(LNParams.cm.all.values)
+      val allChannels = LNParams.cm.allBtc.values.take(8)
+      val usdChannels = LNParams.cm.fiatUsd.values.take(8)
+      val eurChannels = LNParams.cm.fiatEur.values.take(8)
+
+      val lnBalance = Channel.totalBalance(LNParams.cm.allBtc.values.map(_._1))
+      val lnBalanceUsd = LNParams.cm.fiatUsd.values.map(_._2.fiatValue).sum
+      val lnBalanceUsdSats = LNParams.cm.fiatUsd.values.map(_._1.data.ourBalance).sum
+      val lnBalanceEur = LNParams.cm.fiatEur.values.map(_._2.fiatValue).sum
+      val lnBalanceEurSats = LNParams.cm.fiatEur.values.map(_._1.data.ourBalance).sum
+
       val localInCount = LNParams.cm.inProcessors.count { case (fullTag, _) => fullTag.tag == PaymentTagTlv.FINAL_INCOMING }
       val trampolineCount = LNParams.cm.inProcessors.count { case (fullTag, _) => fullTag.tag == PaymentTagTlv.TRAMPLOINE_ROUTED }
       val localOutCount = LNParams.cm.opm.data.payments.count { case (fullTag, _) => fullTag.tag == PaymentTagTlv.LOCALLY_SENT }
@@ -920,11 +941,28 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
       fiatUnitPriceAndChange.setText(unitPriceAndChange.html)
       totalFiatBalance.setText(WalletApp.currentMsatInFiatHuman(BaseActivity.totalBalance).html)
       totalBalance.setText(WalletApp.denom.parsedWithSign(BaseActivity.totalBalance, cardIn, totalZero).html)
+
+      // Lightning Network
       totalLightningBalance.setText(WalletApp.denom.parsedWithSign(lnBalance, cardIn, lnCardZero).html)
       lnBalanceFiat.setText(WalletApp currentMsatInFiatHuman lnBalance)
-      channelIndicator.createIndicators(allChannels.toArray)
+      channelIndicator.createIndicators(allChannels.map(_._1).toArray)
 
-      setVisMany(allChannels.nonEmpty -> channelStateIndicators, allChannels.nonEmpty -> totalLightningBalance, allChannels.isEmpty -> addChannelTip)
+      // USD Fiat channel
+      totalUsdBalance.setText(fiatOrNothing(lnBalanceUsd, cardIn, Ticker.USD_TICKER.tag).html)
+      lnBalanceFiatUsd.setText(WalletApp currentMsatInFiatHuman lnBalanceUsdSats)
+      channelIndicatorUsd.createIndicators(usdChannels.map(_._1).toArray)
+
+      // EUR Fiat channel
+      totalEurBalance.setText(fiatOrNothing(lnBalanceEur, cardIn, Ticker.EUR_TICKER.tag).html)
+      lnBalanceFiatEur.setText(WalletApp currentMsatInFiatHuman lnBalanceEurSats)
+      channelIndicatorEur.createIndicators(eurChannels.map(_._1).toArray)
+
+      setVisMany(allChannels.nonEmpty -> channelStateIndicators,
+        allChannels.nonEmpty -> totalLightningBalance,
+        allChannels.isEmpty -> addChannelTip,
+        usdChannels.nonEmpty -> usdCard,
+        eurChannels.nonEmpty -> eurCard)
+
       // We have updated chain wallet balances at this point because listener in WalletApp gets called first
       chainCards.update(LNParams.chainWallets.wallets)
 
@@ -940,6 +978,15 @@ class HubActivity extends NfcReaderActivity with ChanErrorHandlerActivity with E
     }
   }
 
+  private def fiatOrNothing(amt: Double, mainColor: String, sign: String): String = {
+    if (0.0 != amt) {
+      val fmt: DecimalFormat = new DecimalFormat("###,###,###.##")
+      fmt.setDecimalFormatSymbols(Denomination.symbols)
+
+      s"<font color=$mainColor>" + fmt.format(amt) + "</font>" + "\u00A0" + sign
+    }
+    else getString(chan_nothing)
+  }
   // LISTENERS
 
   private var stateSubscription = Option.empty[Subscription]

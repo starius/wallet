@@ -192,6 +192,135 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Fiat balances card -->
+        <androidx.cardview.widget.CardView
+            card_view:cardCornerRadius="@dimen/corner_radius"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="5dp"
+            android:onClick="goToStatPage"
+            android:id="@+id/usdCard"
+            style="@style/Card">
+
+            <LinearLayout
+                android:padding="15dp"
+                android:orientation="vertical"
+                android:background="@color/cardFiatUsd"
+                style="@style/FillingView">
+
+                <!-- Text and balance -->
+
+                <RelativeLayout style="@style/FillingView">
+
+                    <TextView
+                        android:layout_marginEnd="3dp"
+                        android:textColor="@color/colorAccent"
+                        android:text="@string/fiat_wallet_usd"
+                        android:layout_centerVertical="true"
+                        style="@style/BoundedView"/>
+
+                    <TextView
+                        android:id="@+id/totalUsdBalance"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        style="@style/Emphasized"/>
+
+                </RelativeLayout>
+
+                <!-- Indicators and payment state -->
+
+                <RelativeLayout
+                    style="@style/FillingView"
+                    android:id="@+id/channelStateIndicatorsUsd">
+
+                    <com.indicator.ChannelIndicatorLine
+                        android:id="@+id/channelIndicatorUsd"
+                        android:layout_centerVertical="true"
+                        style="@style/BoundedView"/>
+
+                    <LinearLayout
+                        android:layout_marginTop="6dp"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:orientation="horizontal"
+                        style="@style/BoundedView">
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_marginTop="6dp"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:id="@+id/lnBalanceFiatUsd"
+                        style="@style/BoundedView"/>
+
+                </RelativeLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            card_view:cardCornerRadius="@dimen/corner_radius"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="5dp"
+            android:onClick="goToStatPage"
+            android:id="@+id/eurCard"
+            style="@style/Card">
+
+            <LinearLayout
+                android:padding="15dp"
+                android:orientation="vertical"
+                android:background="@color/cardFiatEur"
+                style="@style/FillingView">
+
+                <!-- Text and balance -->
+
+                <RelativeLayout style="@style/FillingView">
+
+                    <TextView
+                        android:layout_marginEnd="3dp"
+                        android:textColor="@color/colorAccent"
+                        android:text="@string/fiat_wallet_eur"
+                        android:layout_centerVertical="true"
+                        style="@style/BoundedView"/>
+
+                    <TextView
+                        android:id="@+id/totalEurBalance"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        style="@style/Emphasized"/>
+
+                </RelativeLayout>
+
+                <!-- Indicators and payment state -->
+
+                <RelativeLayout
+                    style="@style/FillingView"
+                    android:id="@+id/channelStateIndicatorsEur">
+
+                    <com.indicator.ChannelIndicatorLine
+                        android:id="@+id/channelIndicatorEur"
+                        android:layout_centerVertical="true"
+                        style="@style/BoundedView"/>
+
+                    <LinearLayout
+                        android:layout_marginTop="6dp"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:orientation="horizontal"
+                        style="@style/BoundedView">
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_marginTop="6dp"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:id="@+id/lnBalanceFiatEur"
+                        style="@style/BoundedView"/>
+
+                </RelativeLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
         <!-- Recovery phrase warning -->
 
         <TextView

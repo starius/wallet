@@ -447,6 +447,9 @@
     <string name="tx_rbf_err_parents_missing">No se puede impulsar esta transaccion porque sus padres éstan ausentes en esta billetera</string>
     <string name="chan_reserve">Reserve</string>
     <string name="chan_server_rate">Server rate</string>
+    <string name="fiat_wallet">Fiat</string>
+    <string name="fiat_wallet_usd">USD</string>
+    <string name="fiat_wallet_eur">EUR</string>
 
     <!-- /CPFP/RBF -->
 

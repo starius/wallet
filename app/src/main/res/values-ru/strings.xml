@@ -451,6 +451,9 @@
     <string name="tx_rbf_err_rbf_disabled">Эту транзакцию нельзя ускорить потому что ее RBF-флаг отключен</string>
     <string name="tx_rbf_err_foreign_inputs">Эту транзакцию нельзя ускорить потому что она содержит инпуты, не принадлежащие этому кошельку</string>
     <string name="tx_rbf_err_parents_missing">Эту транзакцию нельзя ускорить потому что предшествующих ей транзакций нет в этом кошельке</string>
+    <string name="fiat_wallet">Фиат</string>
+    <string name="fiat_wallet_usd">USD</string>
+    <string name="fiat_wallet_eur">EUR</string>
 
     <!-- /CPFP/RBF -->
 

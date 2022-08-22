@@ -447,6 +447,9 @@
     <string name="tx_rbf_err_parents_missing">Can not boost this transaction because its parents are missing in this wallet</string>
     <string name="chan_reserve">Reserve</string>
     <string name="chan_server_rate">Server rate</string>
+    <string name="fiat_wallet">Fiat</string>
+    <string name="fiat_wallet_usd">USD</string>
+    <string name="fiat_wallet_eur">EUR</string>
 
     <!-- /CPFP/RBF -->
 
