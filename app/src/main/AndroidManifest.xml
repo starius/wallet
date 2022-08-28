@@ -30,7 +30,7 @@
         android:fullBackupContent="false"
         android:requestLegacyExternalStorage="true"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.WalletApp"
+        android:name="com.btcontract.walletfiat.WalletApp"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name">
 
@@ -48,10 +48,10 @@
 
         <service
             android:stopWithTask="true"
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.utils.AwaitService"/>
+            android:name="com.btcontract.walletfiat.utils.AwaitService"/>
 
         <activity
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.MainActivity"
+            android:name="com.btcontract.walletfiat.MainActivity"
             android:theme="@style/AppThemeNoActionBar">
 
             <intent-filter>
@@ -85,18 +85,18 @@
 
         <activity
             android:launchMode="singleTask"
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.EmergencyActivity"
+            android:name="com.btcontract.walletfiat.EmergencyActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNoActionBar"/>
 
         <activity
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.SetupActivity"
+            android:name="com.btcontract.walletfiat.SetupActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNoActionBar"/>
 
         <activity
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.HubActivity"
+            android:name="com.btcontract.walletfiat.HubActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNoActionBar"
@@ -104,49 +104,49 @@
 
         <activity
             android:launchMode="singleTask"
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.RemotePeerActivity"
+            android:name="com.btcontract.walletfiat.RemotePeerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNoActionBar"/>
 
         <activity
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.QRChainActivity"
+            android:name="com.btcontract.walletfiat.QRChainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNoActionBar"/>
 
         <activity
             android:launchMode="singleTask"
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.QRInvoiceActivity"
+            android:name="com.btcontract.walletfiat.QRInvoiceActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNoActionBar"/>
 
         <activity
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.QRSplitActivity"
+            android:name="com.btcontract.walletfiat.QRSplitActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNoActionBar"/>
 
         <activity
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.ChanActivity"
+            android:name="com.btcontract.walletfiat.ChanActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNoActionBar"/>
 
         <activity
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.SettingsActivity"
+            android:name="com.btcontract.walletfiat.SettingsActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNoActionBar"/>
 
         <activity
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.StatActivity"
+            android:name="com.btcontract.walletfiat.StatActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNoActionBar"/>
 
         <activity
             android:launchMode="singleTask"
-            android:name="com.btcontract.walletfiat.com.btcontract.walletfiat.CoinControlActivity"
+            android:name="com.btcontract.walletfiat.CoinControlActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNoActionBar"/>
 
