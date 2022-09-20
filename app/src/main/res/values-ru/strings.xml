@@ -85,6 +85,7 @@
 
     <string name="dialog_receive_btc"><![CDATA[Получить на <b>Биткойн</b>-адрес]]></string>
     <string name="dialog_receive_ln"><![CDATA[Получить на инвойс-<b>Молнию</b>]]></string>
+    <string name="dialog_refill_ln"><![CDATA[Пополнить канал через <b>Молнию</b>]]></string>
 
     <string name="dialog_legacy_transfer_btc">Перевод на современный кошелек</string>
     <string name="dialog_legacy_send_btc">Отправить средства на адрес</string>
@@ -400,6 +401,8 @@
     <string name="ln_hosted_chan_drain_impossible_few_funds">На данный момент средства из этого hosted-канала не могут быть перемещены потому что в нем слишком мало денег.</string>
     <string name="ln_hosted_chan_drain_impossible_no_chans">На данный момент средства из этого hosted-канала не могут быть перемещены потому что в кошельке нет каналов, способных принимать деньги.</string>
     <string name="ln_hosted_chan_remove_impossible">Этот hosted-канал нельзя удалить прямо сейчас потому что в нем есть платежи в полете. Пожалуйста, подождите завершения платежей.</string>
+    <string name="ln_hosted_chan_refill_impossible">Невозможно пополнить этот фиатный канал</string>
+    <string name="ln_hosted_chan_refill_low_funds">Не хватает средств для пополнения фиатного канала</string>
 
     <!-- DO NOT TRANSLATE --> <string name="ln_chan_details">Channel details\n\nRemote peer node ID\n%1$s\n\nLocal wallet node ID\n%2$s\n\nChannel short ID\n%3$s\n\nFunding txid\n%4$s\n\nChannel started\n%5$s</string>
     <!-- DO NOT TRANSLATE --> <string name="ln_hosted_chan_state">%1$s\n\n\nState snapshot\n%2$s\n\nRevealed preimages\n%3$s</string>
@@ -409,13 +412,15 @@
         <item><![CDATA[Закрыть канал в кошелек]]></item>
         <item><![CDATA[Закрыть канал на адрес]]></item>
         <item><![CDATA[Получить в канал]]></item>
+        <item><![CDATA[Пополнить из других каналов]]></item>
     </array>
 
     <array name="ln_hosted_chan_actions">
-        <item><![CDATA[Информация о <b>Hosted-канале</b>]]></item>
+        <item><![CDATA[Информация о <b>Фиатном канале</b>]]></item>
         <item><![CDATA[Экспортировать состояние канала]]></item>
         <item><![CDATA[Переместить средства]]></item>
         <item><![CDATA[Получить в канал]]></item>
+        <item><![CDATA[Пополнить из других каналов]]></item>
     </array>
 
     <string name="ln_hc_override">Override proposal</string>

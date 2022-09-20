@@ -85,6 +85,7 @@
 
     <string name="dialog_receive_btc"><![CDATA[Receive to <b>Bitcoin</b> address]]></string>
     <string name="dialog_receive_ln"><![CDATA[Receive to <b>Lightning</b> invoice]]></string>
+    <string name="dialog_refill_ln"><![CDATA[Refill channel via <b>Lightning</b>]]></string>
 
     <string name="dialog_legacy_transfer_btc">Transfer funds to modern wallet</string>
     <string name="dialog_legacy_send_btc">Send transaction to address</string>
@@ -397,6 +398,9 @@
     <string name="ln_hosted_chan_drain_impossible_no_chans">Funds can not be drained from this hosted channel at the moment because there are no normal channels capable of receiving.</string>
     <string name="ln_hosted_chan_remove_impossible">This hosted channel can not be removed right now because it contains in-flight payments, please wait until they are resolved.</string>
 
+    <string name="ln_hosted_chan_refill_impossible">Impossible to refill fiat channel</string>
+    <string name="ln_hosted_chan_refill_low_funds">Not enough funds to refill fiat channel</string>
+
     <!-- DO NOT TRANSLATE --> <string name="ln_chan_details">Channel details\n\nRemote peer node ID\n%1$s\n\nLocal wallet node ID\n%2$s\n\nChannel short ID\n%3$s\n\nFunding txid\n%4$s\n\nChannel started\n%5$s</string>
     <!-- DO NOT TRANSLATE --> <string name="ln_hosted_chan_state">%1$s\n\n\nState snapshot\n%2$s\n\nRevealed preimages\n%3$s</string>
 
@@ -405,6 +409,7 @@
         <item><![CDATA[Close channel to wallet]]></item>
         <item><![CDATA[Close channel to address]]></item>
         <item><![CDATA[Receive to channel]]></item>
+        <item><![CDATA[Refill from other channels]]></item>
     </array>
 
     <array name="ln_hosted_chan_actions">
@@ -412,6 +417,7 @@
         <item><![CDATA[Export channel state]]></item>
         <item><![CDATA[Drain channel balance]]></item>
         <item><![CDATA[Receive to channel]]></item>
+        <item><![CDATA[Refill from other channels]]></item>
     </array>
 
     <string name="ln_hc_override">Override proposal</string>
@@ -450,7 +456,6 @@
     <string name="fiat_wallet">Fiat</string>
     <string name="fiat_wallet_usd">USD</string>
     <string name="fiat_wallet_eur">EUR</string>
-
     <!-- /CPFP/RBF -->
 
 </resources>

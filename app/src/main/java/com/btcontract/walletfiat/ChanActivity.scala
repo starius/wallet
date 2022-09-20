@@ -309,6 +309,8 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
 
     case (cs: NormalCommits, 2) => closeNcToAddress(cs)
     case (cs: Commitments, 3) => receiveIntoChan(cs)
+    case (cs: Commitments, 4) => startRefillChan(cs)
+
     case _ =>
   }
 
@@ -365,6 +367,35 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
     }
   }
 
+  def refillChannel(commits: Commitments, amount: MilliSatoshi) : Unit = {
+    val relatedChan = getChanByCommits(commits).toList
+    val maxReceivable = LNParams.cm.maxReceivable(relatedChan.map(ChanAndCommits(_, commits)))
+    val maxSendable = maxAllSendable
+    val preimage = randomBytes32
+    val otherChans = LNParams.cm.all.map(_._2).filter(!relatedChan.contains(_)).toSeq
+    println(s"Max sendable: ${maxSendable}, amount: ${amount}, max receivable: ${maxReceivable.map(_.maxReceivable)}")
+    if (maxSendable.min(amount) < LNParams.minPayment) {
+      snack(chanContainer, getString(ln_hosted_chan_refill_low_funds).html, R.string.dialog_ok, _.dismiss)
+    } else if (otherChans.isEmpty) {
+      snack(chanContainer, getString(ln_hosted_chan_refill_impossible).html, R.string.dialog_ok, _.dismiss)
+    } else {
+      maxReceivable match {
+        case None => snack(chanContainer, getString(ln_hosted_chan_refill_impossible).html, R.string.dialog_ok, _.dismiss)
+        case ncOpt if ncOpt.forall(_.maxReceivable < LNParams.minPayment) => snack(chanContainer, getString(ln_hosted_chan_refill_impossible).html, R.string.dialog_ok, _.dismiss)
+        case Some(csAndMax) =>
+          val toSend = amount.min(maxSendable.min(csAndMax.maxReceivable))
+          val feeReserve = LNParams.cm.feeReserve(toSend, typicalChainTxFee, WalletApp.capLNFeeToChain, LNParams.maxOffChainFeeAboveRatio)
+          val pd = PaymentDescription(split = None, label = getString(tx_ln_label_reflexive).asSome, semanticOrder = None, invoiceText = new String, toSelfPreimage = preimage.asSome)
+          val prExt = LNParams.cm.makePrExt(toReceive = toSend, description = pd, allowedChans = csAndMax.commits, hash = Crypto.sha256(preimage), secret = randomBytes32)
+          val cmd = LNParams.cm.makeSendCmd(prExt, allowedChans = otherChans, feeReserve, toSend).modify(_.split.totalSum).setTo(toSend)
+          WalletApp.app.quickToast(getString(dialog_lnurl_processing).format(me getString tx_ln_label_reflexive).html)
+          replaceOutgoingPayment(prExt, pd, action = None, sentAmount = prExt.pr.amount.get)
+          LNParams.cm.localSend(cmd)
+      }
+    }
+
+  }
+
   def receiveIntoChan(commits: Commitments): Unit = {
     lnReceiveGuard(getChanByCommits(commits).toList, chanContainer) {
       new OffChainReceiver(getChanByCommits(commits).toList, initMaxReceivable = Long.MaxValue.msat, initMinReceivable = 0L.msat) {
@@ -372,6 +403,21 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
         override def getDescription: PaymentDescription = PaymentDescription(split = None, label = None, semanticOrder = None, invoiceText = manager.resultExtraInput getOrElse new String)
         override def processInvoice(prExt: PaymentRequestExt): Unit = goToWithValue(ClassNames.qrInvoiceActivityClass, prExt)
         override def getTitleText: String = getString(dialog_receive_ln)
+      }
+    }
+  }
+
+  def startRefillChan(hc: Commitments): Unit = {
+    lnReceiveGuard(getChanByCommits(hc).toList, chanContainer) {
+      new OffChainReceiver(getChanByCommits(hc).toList, initMaxReceivable = Long.MaxValue.msat, initMinReceivable = 0L.msat) {
+        override def getManager: RateManager = new RateManager(body, getString(dialog_add_description).asSome, dialog_visibility_sender, LNParams.fiatRates.info.rates, WalletApp.fiatCode)
+        override def getDescription: PaymentDescription = PaymentDescription(split = None, label = None, semanticOrder = None, invoiceText = manager.resultExtraInput getOrElse new String)
+        override def processInvoice(prExt: PaymentRequestExt): Unit = ()
+        override def getTitleText: String = getString(dialog_refill_ln)
+        override def receive(alert: AlertDialog): Unit = {
+          refillChannel(hc, manager.resultMsat)
+          alert.dismiss
+        }
       }
     }
   }
@@ -460,6 +506,10 @@ class ChanActivity extends ChanErrorHandlerActivity with ChoiceReceiver with Has
   private def getChanByCommits(commits: Commitments) = csToDisplay.collectFirst { case cnc if cnc.commits.channelId == commits.channelId => cnc.chan }
 
   private def maxNormalReceivable = LNParams.cm.maxReceivable(LNParams.cm sortedReceivable LNParams.cm.allNormal)
+  private def maxNormalSendable: MilliSatoshi = LNParams.cm.maxSendable((LNParams.cm sortedSendable LNParams.cm.allNormal).map(_.chan))
+
+  private def maxAllReceivable = LNParams.cm.maxReceivable(LNParams.cm sortedReceivable LNParams.cm.all.map(_._2))
+  private def maxAllSendable: MilliSatoshi = LNParams.cm.maxSendable((LNParams.cm sortedSendable LNParams.cm.all.map(_._2)).map(_.chan))
 
   private def updateChanData: TimerTask = UITask {
     csToDisplay = LNParams.cm.all.values.flatMap(Channel.chanAndCommitsOpt).toList

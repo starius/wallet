@@ -85,6 +85,7 @@
 
     <string name="dialog_receive_btc"><![CDATA[Recibir a la dirección de <b>Bitcoin</b>]]></string>
     <string name="dialog_receive_ln"><![CDATA[Recibir a la factura de <b>Lightning</b>]]></string>
+    <string name="dialog_refill_ln"><![CDATA[Recargar canal con <b>Lightning</b>]]></string>
 
     <string name="dialog_legacy_transfer_btc">Mover fondos a una billetera moderna</string>
     <string name="dialog_legacy_send_btc">Enviar transacción a la dirección</string>
@@ -395,6 +396,9 @@
     <string name="ln_hosted_chan_drain_impossible_no_chans">Los fondos no se pueden mover de este canal hospedado porque no existe un canal Lightning capaz de recibirlos actualmente.</string>
     <string name="ln_hosted_chan_remove_impossible">Este canal hospedado no se puede remover ahora porque tiene pagos en camino, por favor espere hasta que hayan sido completados.</string>
 
+    <string name="ln_hosted_chan_refill_impossible">Imposible recargar canal fiat</string>
+    <string name="ln_hosted_chan_refill_low_funds">No hay fondos suficientes para recargar el canal fiduciario</string>
+
     <!-- DO NOT TRANSLATE --> <string name="ln_chan_details">Channel details\n\nRemote peer node ID\n%1$s\n\nLocal wallet node ID\n%2$s\n\nChannel short ID\n%3$s\n\nFunding txid\n%4$s\n\nChannel started\n%5$s</string>
     <!-- DO NOT TRANSLATE --> <string name="ln_hosted_chan_state">%1$s\n\n\nState snapshot\n%2$s\n\nRevealed preimages\n%3$s</string>
 
@@ -403,6 +407,7 @@
         <item><![CDATA[Cerrar canal a la billetera]]></item>
         <item><![CDATA[Cerrar canal a la direccion]]></item>
         <item><![CDATA[Recibir a este canal]]></item>
+        <item><![CDATA[Recarga desde otros canales]]></item>
     </array>
 
     <array name="ln_hosted_chan_actions">
@@ -410,6 +415,7 @@
         <item><![CDATA[Exportar detalles de canal]]></item>
         <item><![CDATA[Vaciar saldo del canal]]></item>
         <item><![CDATA[Recibir a este canal]]></item>
+        <item><![CDATA[Recarga desde otros canales]]></item>
     </array>
 
     <string name="ln_hc_override">Propuesta de anulación</string>

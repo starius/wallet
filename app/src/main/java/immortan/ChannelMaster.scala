@@ -244,6 +244,7 @@ class ChannelMaster(val payBag: PaymentBag, val chanBag: ChannelBag, val dataBag
   def channelsContainHtlc: Boolean = operationalCncs(all.values).exists(cnc => cnc.commits.allOutgoing.nonEmpty || cnc.commits.crossSignedIncoming.nonEmpty)
 
   def sortedReceivable(chans: Iterable[Channel] = Nil): Seq[ChanAndCommits] = operationalCncs(chans).filter(_.commits.updateOpt.isDefined).sortBy(_.commits.availableForReceive)
+  def sortedSendable(chans: Iterable[Channel] = Nil): Seq[ChanAndCommits] = operationalCncs(chans).filter(_.commits.updateOpt.isDefined).sortBy(_.commits.availableForSend)
 
   def maxReceivable(sorted: Seq[ChanAndCommits] = Nil): Option[CommitsAndMax] = {
     // Example: we have (5, 50, 60, 100) chans -> (50, 60, 100), receivable = 50*3 = 150, #channels = 3

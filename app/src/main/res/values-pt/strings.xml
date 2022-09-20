@@ -85,6 +85,7 @@
 
     <string name="dialog_receive_btc"><![CDATA[Receber em endereço <b>Bitcoin</b>]]></string>
     <string name="dialog_receive_ln"><![CDATA[Receber em invoice <b>Lightning</b>]]></string>
+    <string name="dialog_refill_ln"><![CDATA[Reabastecer o canal via <b>Lightning</b>]]></string>
 
     <string name="dialog_legacy_transfer_btc">Transferir para carteira moderna</string>
     <string name="dialog_legacy_send_btc">Enviar de tipo antigo</string>
@@ -394,6 +395,8 @@
     <string name="ln_hosted_chan_drain_impossible_few_funds">Funds can not be drained from this hosted channel at the moment because an amount it contains is too small.</string>
     <string name="ln_hosted_chan_drain_impossible_no_chans">Funds can not be drained from this hosted channel at the moment because there are no normal channels capable of receiving.</string>
     <string name="ln_hosted_chan_remove_impossible">This hosted channel can not be removed right now because it contains in-flight payments, please wait until they are resolved.</string>
+    <string name="ln_hosted_chan_refill_impossible">Impossível recarregar canal fiat</string>
+    <string name="ln_hosted_chan_refill_low_funds">Não há fundos suficientes para reabastecer o canal fiduciário</string>
 
     <!-- DO NOT TRANSLATE --> <string name="ln_chan_details">Channel details\n\nRemote peer node ID\n%1$s\n\nLocal wallet node ID\n%2$s\n\nChannel short ID\n%3$s\n\nFunding txid\n%4$s\n\nChannel started\n%5$s</string>
     <!-- DO NOT TRANSLATE --> <string name="ln_hosted_chan_state">%1$s\n\n\nState snapshot\n%2$s\n\nRevealed preimages\n%3$s</string>
@@ -403,13 +406,15 @@
         <item><![CDATA[Close channel to wallet]]></item>
         <item><![CDATA[Close channel to address]]></item>
         <item><![CDATA[Receive to channel]]></item>
+        <item><![CDATA[Recarga de outros canais]]></item>
     </array>
 
     <array name="ln_hosted_chan_actions">
-        <item><![CDATA[Share <b>Hosted Channel</b> details]]></item>
-        <item><![CDATA[Export channel state]]></item>
-        <item><![CDATA[Drain channel balance]]></item>
-        <item><![CDATA[Receive to channel]]></item>
+        <item><![CDATA[Compartilhe detalhes do <b>Canal hospedado</b>]]></item>
+        <item><![CDATA[Exportar estado do canal]]></item>
+        <item><![CDATA[Equilíbrio do canal de drenagem]]></item>
+        <item><![CDATA[Receber no canal]]></item>
+        <item><![CDATA[Recarga de outros canais]]></item>
     </array>
 
     <string name="ln_hc_override">Substituir proposta</string>
