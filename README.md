@@ -1,4 +1,4 @@
-Valet is a fork of [Simple Bitcoin Wallet (aka SBW)](https://github.com/btcontract/wallet). 
+**Valet** is a fork of [Simple Bitcoin Wallet (aka SBW)](https://github.com/btcontract/wallet). 
 As the original it uses an [IMMORTAN](https://github.com/btcontract/IMMORTAN) library that allows
 extensive Lightning Network support in addition to non-custodial Bitcoin wallet features in Android. 
 
