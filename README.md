@@ -1,4 +1,14 @@
-Simple Bitcoin Wallet (aka SBW) is an [IMMORTAN](https://github.com/btcontract/IMMORTAN)-powered non-custodial Bitcoin wallet for Android with extensive Lightning Network support. It is fully autonomus and does not rely on any kind of centralized service (such as Google services, routing servers, special LSP nodes etc). It is the first mobile wallet which supports routing of 3rd-party Lightning payments and thus allows users to avoid private channel closings as well as earn routing fees in a non-custodial way.    
+Valet is a fork of [Simple Bitcoin Wallet (aka SBW)](https://github.com/btcontract/wallet). 
+As the original it uses an [IMMORTAN](https://github.com/btcontract/IMMORTAN) library that allows
+extensive Lightning Network support in addition to non-custodial Bitcoin wallet features in Android. 
+
+As much as SBW, it is fully autonomous and does not rely on any kind of centralized service 
+(such as Google services, routing servers, special LSP nodes etc). The destinctive feature of Valet
+as opposed to the original SBW is Fiat Channels support that replaces original Hosted Channels 
+solution and allows users to have "Hosted" Channels capacities tied to value of some other assets
+for example US Dollar or Euro. This is technically achieved by assigning a special "ticker" to each
+channel and adding satoshis-denominated "rate" into fiat channel state 
+([more...](https://github.com/standardsats/fiat-channels-rfc)).
 
 <a href="https://play.google.com/store/apps/details?id=com.btcontract.walletfiat"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge.png" height="80pt"/></a>&nbsp;<a href="https://f-droid.org/repository/browse/?fdid=com.btcontract.wallet"><img alt="Get it on F-Droid" src="https://f-droid.org/wiki/images/5/55/F-Droid-button_get-it-on_bigger.png" height="80pt"/></a>
 
@@ -63,7 +73,7 @@ Signer #1 public key SHA-1 digest: c4400469d5ad807dd9394785f1fa95003588a091
 Signer #1 public key MD5 digest: e4e1f847e0cb0a9703dc4f9323fd6d87
 ```
 
-### Project sponsors
+### SBW Project sponsors
 
 <table>
   <tbody>
