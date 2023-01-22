@@ -14,19 +14,23 @@ object FiatRates {
 
 class FiatRates(bag: DataBag) extends CanBeShutDown {
   val customFiatSymbols: Map[String, String] = Map("rub" -> "\u20BD", "usd" -> "$", "inr" -> "₹", "gbp" -> "£", "cny" -> "CN¥", "jpy" -> "¥", "brl" -> "R$", "eur" -> "€", "krw" -> "₩",
-    "cym" -> "￠", "lvl" -> "ℒ\uD835\uDCC8", "svc" -> "₡", "frf" -> "₣", "brl" -> "R$")
+    "cym" -> "￠", "lvl" -> "ℒ\uD835\uDCC8", "svc" -> "₡", "frf" -> "₣", "brl" -> "R$", "sos" -> "Sh.So.")
 
   val universallySupportedSymbols: Map[String, String] = Map("usd" -> "US Dollar", "eur" -> "Euro", "jpy" -> "Japanese Yen", "cny" -> "Chinese Yuan", "inr" -> "Indian Rupee", "cad" -> "Canadian Dollar",
     "rub" -> "Русский Рубль", "brl" -> "Real Brasileiro", "czk" -> "Česká Koruna", "gbp" -> "Pound Sterling", "aud" -> "Australian Dollar", "try" -> "Turkish Lira", "nzd" -> "New Zealand Dollar",
     "thb" -> "Thai Baht", "twd" -> "New Taiwan Dollar", "krw" -> "South Korean won", "clp" -> "Chilean Peso", "sgd" -> "Singapore Dollar", "hkd" -> "Hong Kong Dollar", "pln" -> "Polish złoty",
     "dkk" -> "Danish Krone", "sek" -> "Swedish Krona", "chf" -> "Swiss franc", "huf" -> "Hungarian forint", "cym" -> "Welsh Pound", "lvl" -> "Latvian lat", "dm" -> "Deutsche Mark",
-    "frf" -> "French franc", "svc" -> "Salvadoran colón", "esd" -> "Salvadoran dollar", "sps" -> "Salvadoran peso", "eip" -> "Punt na hÉireann", "brl" -> "Brazilian Real")
+    "frf" -> "French franc", "svc" -> "Salvadoran colón", "esd" -> "Salvadoran dollar", "sps" -> "Salvadoran peso", "eip" -> "Punt na hÉireann", "brl" -> "Brazilian Real", "sos" -> "Somali Shilling")
 
-  def reloadData: Tools.Fiat2Btc = fr.acinq.eclair.secureRandom nextInt 3 match {
-    case 0 => to[CoinGecko](Tools.get("https://api.coingecko.com/api/v3/exchange_rates").string).rates.map { case (code, item) => code.toLowerCase -> item.value }
-    case 1 => to[FiatRates.BlockchainInfoItemMap](Tools.get("https://blockchain.info/ticker").string).map { case (code, item) => code.toLowerCase -> item.last }
-    case _ => to[Bitpay](Tools.get("https://bitpay.com/rates").string).data.map { case BitpayItem(code, rate) => code.toLowerCase -> rate }.toMap
+  def reloadData: Tools.Fiat2Btc = focused.map(_.toLowerCase) match {
+    case Some("sos") => to[Bitpay](Tools.get("https://bitpay.com/rates").string).data.map { case BitpayItem(code, rate) => code.toLowerCase -> rate }.toMap
+    case _ => fr.acinq.eclair.secureRandom nextInt 3 match {
+      case 0 => to[CoinGecko](Tools.get("https://api.coingecko.com/api/v3/exchange_rates").string).rates.map { case (code, item) => code.toLowerCase -> item.value }
+      case 1 => to[FiatRates.BlockchainInfoItemMap](Tools.get("https://blockchain.info/ticker").string).map { case (code, item) => code.toLowerCase -> item.last }
+      case _ => to[Bitpay](Tools.get("https://bitpay.com/rates").string).data.map { case BitpayItem(code, rate) => code.toLowerCase -> rate }.toMap
+    }
   }
+
 
   def enrichFiats(fs: Tools.Fiat2Btc): Tools.Fiat2Btc = {
     val eur = fs.get("eur").getOrElse(0.0)
@@ -42,7 +46,6 @@ class FiatRates(bag: DataBag) extends CanBeShutDown {
       "sps" -> (1.0 / 5.0) * frf, // 1 salvadoran peso = 5 francs 1919
       "eip" -> (1.0 / 1.2697) * eur // https://remitradar.com/IEP-to-EUR-best-exchange-rate
     )
-    println(s"Rich fiats: $richFiats")
     fs ++ richFiats
   }
 
@@ -53,6 +56,7 @@ class FiatRates(bag: DataBag) extends CanBeShutDown {
   }
 
   var listeners: Set[FiatRatesListener] = Set.empty
+  var focused: Option[String] = None
   var info: FiatRatesInfo = bag.tryGetFiatRatesInfo getOrElse {
     FiatRatesInfo(rates = Map.empty, oldRates = Map.empty, stamp = 0L)
   }
@@ -64,10 +68,17 @@ class FiatRates(bag: DataBag) extends CanBeShutDown {
     Rx.initDelay(repeat, info.stamp, periodSecs * 1000L)
   }
 
-  val subscription: Subscription = retryRepeatDelayedCall.subscribe(newRates => {
+  private[this] def updateRates(newRates: Tools.Fiat2Btc) = {
     info = FiatRatesInfo(enrichFiats(newRates), info.rates, System.currentTimeMillis)
     for (lst <- listeners) lst.onFiatRates(info)
-  }, Tools.none)
+  }
+
+  val subscription: Subscription = retryRepeatDelayedCall.subscribe(updateRates, Tools.none)
+
+  def updateNow: Unit = {
+    var observable = Rx.retry(Rx.ioQueue.map(_ => reloadData), Rx.incSec, 3 to 18 by 3)
+    observable.foreach(updateRates)
+  }
 }
 
 trait FiatRatesListener {

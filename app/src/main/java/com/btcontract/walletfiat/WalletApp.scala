@@ -168,6 +168,7 @@ object WalletApp {
     extDataBag.db txWrap {
       LNParams.feeRates = new FeeRates(extDataBag)
       LNParams.fiatRates = new FiatRates(extDataBag)
+      LNParams.fiatRates.focused = Some(fiatCode)
     }
 
     val pf = new PathFinder(normalBag, hostedBag) {

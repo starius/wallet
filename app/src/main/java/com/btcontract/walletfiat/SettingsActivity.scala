@@ -53,6 +53,8 @@ class SettingsActivity extends BaseActivity with HasTypicalChainFee with ChoiceR
       val fiatCode ~ _ = fiatSymbols(pos)
       WalletApp.app.prefs.edit.putString(WalletApp.FIAT_CODE, fiatCode).commit
       ChannelMaster.next(ChannelMaster.stateUpdateStream)
+      LNParams.fiatRates.focused = Some(fiatCode)
+      UITask(LNParams.fiatRates.updateNow).run
       setFiat.updateView
 
 
