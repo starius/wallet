@@ -34,7 +34,7 @@ channel and adding satoshis-denominated "rate" into fiat channel state
 ```
 git clone https://github.com/btcontract/wallet.git
 cd wallet
-git checkout 4.1.0
+git checkout 4.1.1
 podman build -t sbw .
 podman run -v $PWD:/app/simplebitcoinwallet/wallet:z sbw
 ```

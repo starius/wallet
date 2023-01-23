@@ -39,8 +39,15 @@ class AwaitService extends Service { me =>
       val awaitedBodyText = intent.getStringExtra(AwaitService.BODY_TO_DISPLAY)
       val awaitedTitleText = intent.getStringExtra(AwaitService.TITLE_TO_DISPLAY)
 
-      val disaplyIntent = PendingIntent.getActivity(me, 0, new Intent(me, ClassNames.mainActivityClass), 0)
-      val cancelIntent = PendingIntent.getService(me, 0, new Intent(me, AwaitService.awaitServiceClass).setAction(AwaitService.ACTION_CANCEL), 0)
+      val (disaplyIntent, cancelIntent) = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+        val disaplyIntent = PendingIntent.getActivity(me, 0, new Intent(me, ClassNames.mainActivityClass), PendingIntent.FLAG_IMMUTABLE)
+        val cancelIntent = PendingIntent.getService(me, 0, new Intent(me, AwaitService.awaitServiceClass).setAction(AwaitService.ACTION_CANCEL), PendingIntent.FLAG_IMMUTABLE)
+        (disaplyIntent, cancelIntent)
+      } else {
+        val disaplyIntent = PendingIntent.getActivity(me, 0, new Intent(me, ClassNames.mainActivityClass), 0)
+        val cancelIntent = PendingIntent.getService(me, 0, new Intent(me, AwaitService.awaitServiceClass).setAction(AwaitService.ACTION_CANCEL), 0)
+        (disaplyIntent, cancelIntent)
+      }
 
       val notification =
         new NotificationCompat.Builder(me, AwaitService.CHANNEL_ID).setContentTitle(awaitedTitleText).setContentText(awaitedBodyText)
