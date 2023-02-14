@@ -1,2 +1,0 @@
-* Added USD and EUR tickers
-* First release

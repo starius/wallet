@@ -1,1 +1,1 @@
-Synthetic asssets for Lightning Network
+The Bitcoin Lightning Wallet with synthetic assets
