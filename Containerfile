@@ -19,7 +19,7 @@ RUN set -ex; \
     unzip android-ndk-r22b-linux-x86_64.zip; \
     rm android-ndk-r22b-linux-x86_64.zip; \
     mv android-ndk-r22b "/app/sdk/ndk/22.1.7171670/";
-   
+
 WORKDIR /app/valet/wallet/
 
 CMD ./gradlew assembleRelease && ./gradlew bundleRelease
