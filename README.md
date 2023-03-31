@@ -1,4 +1,5 @@
-**Valet** is a fork of [Simple Bitcoin Wallet (aka SBW)](https://github.com/btcontract/wallet). 
+**Valet** is a fork of [Simple Bitcoin Wallet (aka SBW)](https://github.com/btcontract/wallet).
+
 As the original it uses an [IMMORTAN](https://github.com/btcontract/IMMORTAN) library that allows
 extensive Lightning Network support in addition to non-custodial Bitcoin wallet features in Android. 
 
@@ -12,31 +13,14 @@ channel and adding satoshis-denominated "rate" into fiat channel state
 
 <a href="https://play.google.com/store/apps/details?id=com.btcontract.walletfiat"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge.png" height="80pt"/></a>&nbsp;<a href="https://f-droid.org/repository/browse/?fdid=com.btcontract.wallet"><img alt="Get it on F-Droid" src="https://f-droid.org/wiki/images/5/55/F-Droid-button_get-it-on_bigger.png" height="80pt"/></a>
 
-## Bitcoin part roadmap
-
-- [ ] Implement BIP157/158, let users choose between Electrum and Client Side Filters as a sync mechanism.
-- [x] Support watch-only Bitcoin wallets and import of xPub from hardware wallets.
-- [x] Allow Lightning channels to be funded from imported hardware wallets.
-- [x] Add RBF-based boosting and cancelling for outgoing transactions.
-- [x] Add CPFP-based boosting for incoming transactions.
-- [ ] Implement Taproot wallet type.
-- [x] Implement Coin Control.
-
-## Lightning part roadmap
-
-- [x] Finalize and enable private hosted channels.
-- [x] Achieve complete LNURL spec support (as far as non-custodial wallet can go).
-- [ ] Develop an Eclair plugin which would allow full LN nodes to easily utilize SBW routing capabilities.
-- [ ] Implement UI for fine controlling of routed Lightning payments.
-
 ## Building from source
 
 ```
-git clone https://github.com/btcontract/wallet.git
+git clone https://github.com/standardsats/wallet.git
 cd wallet
 git checkout 4.1.1
-podman build -t sbw .
-podman run -v $PWD:/app/simplebitcoinwallet/wallet:z sbw
+podman build -t valet .
+podman run -v $PWD:/app/valet/wallet:z valet
 ```
 
 ### Signing with your self-signed certificate
@@ -73,7 +57,9 @@ Signer #1 public key SHA-1 digest: c4400469d5ad807dd9394785f1fa95003588a091
 Signer #1 public key MD5 digest: e4e1f847e0cb0a9703dc4f9323fd6d87
 ```
 
-### SBW Project sponsors
+### Acknowledgements
+
+Original SBW Project couldn't be done without LNBig support and A. Kumaigorodski development efforts. 
 
 <table>
   <tbody>
